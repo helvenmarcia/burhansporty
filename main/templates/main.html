@@ -1,31 +1,119 @@
+{% load static %}
 <!DOCTYPE html>
 <html>
     <head>
         <title>BurhanSporty</title>
-        <link rel="stylesheet" href="./style.css">
+        <link rel="icon" href="{% static 'favicon.ico' %}">
+        <link rel="stylesheet" href="{% static 'style.css' %}">
     </head>
     <body>
         <nav class="navbar">
             <div class="logo">
-                <img src="" alt="BP">
+                <img src="{% static 'assets/burhansporty.ico' %}" alt="BP">
             </div>
             <div class="title">BurhanSporty</div>
+            <a class="user" href="https://www.instagram.com/hlvnnn/">Helven Marcia | 2406359853</a>
         </nav>
         <div class="hero">
             <div class="hero-content">
                 <div class="title"></div>
-                <img class="hero-img" src="">
-                <button class="cta">Buy Now</button>
+                <img class="hero-img" src="https://images.unsplash.com/photo-1605348532760-6753d2c43329?q=80&w=1887&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D">
+            </div>
+            <div class="hero-content">
+                <div class="title"></div>
+                <img class="hero-img" src="https://images.unsplash.com/photo-1542291026-7eec264c27ff?q=80&w=2070&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D">
+            </div>
+            <div class="hero-content">
+                <div class="title"></div>
+                <img class="hero-img" src="https://images.unsplash.com/photo-1600185365483-26d7a4cc7519?q=80&w=1925&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D">
             </div>
         </div>
         <div class="list">
             <div class="card">
-                <img src="" alt="Sepatu 1">
-                <div class="title"></div>
+                <img src="https://images.unsplash.com/photo-1605348532760-6753d2c43329?q=80&w=1887&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D" alt="Sepatu 1">
+                <div class="title">Nike Black and White Basketball Shoe</div>
+                <button class="cta">Buy Now</button>
+            </div>
+            <div class="card">
+                <img src="https://images.unsplash.com/photo-1542291026-7eec264c27ff?q=80&w=2070&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D" alt="Sepatu 2">
+                <div class="title">Nike Red</div>
+                <button class="cta">Buy Now</button>
+            </div>
+            <div class="card">
+                <img src="https://images.unsplash.com/photo-1600185365483-26d7a4cc7519?q=80&w=1925&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D" alt="Sepatu 3">
+                <div class="title">Nike Orange White</div>
+                <button class="cta">Buy Now</button>
+            </div>
+            <div class="card">
+                <img src="https://images.unsplash.com/photo-1731132198530-e4b2dc51d511?q=80&w=1632&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D" alt="Sepatu 4">
+                <div class="title">Nike AirJordan</div>
+                <button class="cta">Buy Now</button>
+            </div>
+            <div class="card">
+                <img src="https://images.unsplash.com/photo-1597045566677-8cf032ed6634?q=80&w=687&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D" alt="Sepatu 5">
+                <div class="title">Nike Traditions</div>
+                <button class="cta">Buy Now</button>
             </div>
         </div>
         <div class="footer">
             {{ name }} | {{ npm }} | {{ class }}
         </div>
+
+        <script>
+            (function () {
+                const hero = document.querySelector('.hero');
+                const slides = Array.from(document.querySelectorAll('.hero .hero-content'));
+                if (!hero || slides.length <= 1) return;
+
+                let index = 0;
+                let timer = null;
+                const intervalMs = 2000;
+
+                function goTo(i) {
+                    index = (i + slides.length) % slides.length;
+                    hero.scrollTo({
+                        left: hero.clientWidth * index,
+                        behavior: 'smooth'
+                    });
+                }
+
+                function start() {
+                    stop();
+                    timer = setInterval(() => goTo(index + 1), intervalMs);
+                }
+                function stop() {
+                    if (timer) clearInterval(timer);
+                    timer = null;
+                }
+
+                hero.addEventListener('mouseenter', stop);
+                hero.addEventListener('mouseleave', start);
+
+                window.addEventListener('resize', () => goTo(index));
+
+                document.addEventListener('visibilitychange', () => {
+                    if (document.hidden) stop(); else start();
+                });
+
+                let startX = 0, dx = 0;
+                hero.addEventListener('touchstart', (e) => {
+                    stop();
+                    startX = e.touches[0].clientX;
+                    dx = 0;
+                }, { passive: true });
+                    hero.addEventListener('touchmove', (e) => {
+                    dx = e.touches[0].clientX - startX;
+                }, { passive: true });
+                hero.addEventListener('touchend', () => {
+                    const threshold = hero.clientWidth * 0.15;
+                    if (dx > threshold) goTo(index - 1);
+                    else if (dx < -threshold) goTo(index + 1);
+                    start();
+                });
+
+                start();
+            })();
+        </script>
+
     </body>
 </html>
