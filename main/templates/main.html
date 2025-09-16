@@ -1,246 +1,166 @@
-<!DOCTYPE html>
-<html>
-    <head>
+{% extends 'base.html' %}
+    {% block meta %}
         <title>BurhanSporty</title>
-        <link rel="icon" href="https://i.imgur.com/wIo9Kxl.png">
         <style>
-            * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-            font-family: 'Poppins', sans-serif;
-        }
+            .hero {
+                height: calc(100vh - 70px);
+                margin-top: 70px;
+                overflow: hidden;
+                display: flex;
+                scroll-snap-type: x mandatory;
+                scroll-behavior: smooth;
+            }
+            .hero-content {
+                flex: 0 0 100%;
+                height: 100%;
+                position: relative;
+                scroll-snap-align: start;
+            }
+            .hero-content img {
+                width: 100%;
+                height: 100%;
+                object-fit: cover;
+                filter: brightness(70%);
+            }
+            .hero-content .overlay {
+                position: absolute;
+                bottom: 50px;
+                left: 50px;
+                color: #fff;
+            }
+            .hero-content .overlay h2 {
+                font-size: 36px;
+                font-weight: 700;
+                margin-bottom: 10px;
+            }
+            .hero-content .overlay .buy-btn {
+                background: linear-gradient(135deg, #4CAF50, #45a049);
+                border: none;
+                border-radius: 8px;
+                padding: 12px 20px;
+                color: #fff;
+                font-weight: 600;
+                cursor: pointer;
+                transition: all .25s ease;
+            }
+            .hero-content .overlay .buy-btn:hover {
+                transform: translateY(-2px);
+                box-shadow: 0 6px 14px rgba(0,0,0,.2);
+            }
 
-        body {
-            background-color: #f8f8f8;
-            color: #222;
-        }
+            /* --- PRODUCT GRID --- */
+            .list {
+                display: grid;
+                grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+                gap: 25px;
+                padding: 40px 60px;
+                margin-top: 40px;
+            }
 
-        .navbar {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 70px;
-            background-color: #ffffffcc;
-            backdrop-filter: blur(6px);
-            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            z-index: 1000;
-            padding: 0 20px;
-        }
+            .card {
+                position: relative;
+                border-radius: 12px;
+                overflow: hidden;
+                box-shadow: 0 6px 15px rgba(0, 0, 0, 0.1);
+                background-color: white;
+                transition: transform 0.3s ease, box-shadow 0.3s ease;
+                cursor: pointer;
+                display: flex;
+                flex-direction: column;
+            }
+            .card img {
+                width: 100%;
+                height: 250px;
+                object-fit: cover;
+                transition: transform 0.5s ease;
+            }
+            .card:hover img { transform: scale(1.05); }
 
-        .navbar .logo {
-            position: absolute;
-            left: 20px; 
-        }
-
-        .navbar .logo img {
-            height: 45px;
-            object-fit: contain;
-        }
-
-        .navbar .title {
-            font-size: 24px;
-            font-weight: 700;
-            color: #222;
-            text-align: center;
-        }
-
-        .navbar .user {
-            text-decoration: underscore;
-            position: absolute;
-            height: 100%;
-            right: 25px;
-            display: flex;
-            align-items: center; justify-content: center;
-            color: #222;
-        }
-
-        .hero {
-        height: calc(100vh - 70px);
-        margin-top: 70px;          
-        overflow: hidden;
-        display: flex;
-        scroll-snap-type: x mandatory;
-        scroll-behavior: smooth;
-        }
-
-        .hero-content {
-        flex: 0 0 100%;
-        height: 100%;
-        position: relative;
-        scroll-snap-align: start;
-        }
-
-        .hero:hover { cursor: grab; }
-
-        .hero-content img {
-            width: 100%;
-            height: 100%;
-            object-fit: cover;
-            filter: brightness(75%);
-        }
-
-        .list {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-            gap: 25px;
-            padding: 40px 60px;
-            margin-top: 40px;
-        }
-
-        .card {
-            position: relative;
-            border-radius: 12px;
-            overflow: hidden;
-            box-shadow: 0 6px 15px rgba(0, 0, 0, 0.1);
-            background-color: white;
-            transition: transform 0.3s ease, box-shadow 0.3s ease;
-            cursor: pointer;
-        }
-
-        .card img {
-            width: 100%;
-            height: 300px;
-            object-fit: cover;
-            transition: transform 0.5s ease;
-        }
-
-        .card:hover img {
-            transform: scale(1.05);
-        }
-
-        .card .title,
-        .card .cta {
-            position: absolute;
-            left: 0;
-            width: 100%;
-            padding: 12px;
-            text-align: center;
-            opacity: 0;
-            transform: translateY(100%);
-            transition: all 0.4s ease;
-            background: rgba(0, 0, 0, 0.65);
-            color: white;
-        }
-
-        .card .title {
-            top: 50%;
-            font-size: 18px;
-            font-weight: 600;
-        }
-
-        .card .cta {
-            bottom: 0;
-            background: #ff4c4c;
-            color: white;
-            font-weight: bold;
-            padding: 10px 0;
-            cursor: pointer;
-            border: none;
-            font-size: 16px;
-        }
-
-        .card .cta a{
-            text-decoration: none;
-            color: #222;
-        }
-
-        .card .cta a:hover{
-            text-decoration: underline;
-            font-style: italic;
-        }
-
-        .card:hover .title,
-        .card:hover .cta {
-            opacity: 1;
-            transform: translateY(0);
-        }
-
-        .footer {
-            text-align: center;
-            background-color: #222;
-            color: white;
-            padding: 15px 0;
-            margin-top: 40px;
-            font-size: 14px;
-        }
+            .card-body {
+                padding: 16px;
+                display: flex;
+                flex-direction: column;
+                gap: 8px;
+            }
+            .card-body h3 {
+                font-size: 18px;
+                font-weight: 600;
+                color: #222;
+            }
+            .card-body p {
+                font-size: 14px;
+                color: #555;
+                line-height: 1.4;
+            }
+            .price {
+                font-weight: 700;
+                font-size: 16px;
+                color: #4CAF50;
+            }
+            .cta-row {
+                margin-top: auto;
+                display: flex;
+                justify-content: space-between;
+                align-items: center;
+            }
+            .cta-row a {
+                text-decoration: none;
+            }
+            .cta-row button {
+                background: #ff4c4c;
+                color: #fff;
+                border: none;
+                border-radius: 6px;
+                padding: 8px 14px;
+                font-weight: 600;
+                cursor: pointer;
+                transition: all .25s ease;
+            }
+            .cta-row button:hover {
+                background: #e64343;
+                transform: translateY(-2px);
+            }
         </style>
-    </head>
-    <body>
-        <nav class="navbar">
-            <div class="logo">
-                <img src="https://i.imgur.com/wIo9Kxl.png" alt="BP">
-            </div>
-            <div class="title">{{ app }}</div>
-            <a class="user" href="https://www.instagram.com/hlvnnn/" target="_blank">Helven Marcia | 2406359853</a>
-        </nav>
+    {% endblock meta %}
+    {% block content %}
+        {% if featured_products %}
         <div class="hero">
+        {% for product in featured_products %}
             <div class="hero-content">
-                <div class="title"></div>
-                <img class="hero-img" src="https://images.unsplash.com/photo-1605348532760-6753d2c43329?q=80&w=1887&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D">
+            <img src="{{ product.thumbnail }}" alt="{{ product.title }}">
+            <div class="overlay">
+                <h2>{{ product.title }}</h2>
+                <a href="{% url 'main:show_product_detail' product.id %}">
+                    <button class="buy-btn">View Product</button>
+                </a>
             </div>
-            <div class="hero-content">
-                <div class="title"></div>
-                <img class="hero-img" src="https://images.unsplash.com/photo-1542291026-7eec264c27ff?q=80&w=2070&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D">
             </div>
-            <div class="hero-content">
-                <div class="title"></div>
-                <img class="hero-img" src="https://images.unsplash.com/photo-1600185365483-26d7a4cc7519?q=80&w=1925&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D">
-            </div>
+        {% endfor %}
         </div>
+        {% endif %}
+
+
         <div class="list">
+        {% if not products %}
+            <p>No products available yet.</p>
+        {% else %}
+            {% for product in products %}
             <div class="card">
-                <img src="https://images.unsplash.com/photo-1605348532760-6753d2c43329?q=80&w=1887&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D" alt="Sepatu 1">
-                <div class="title">Nike Black and White Basketball Shoe</div>
-                <button class="cta">
-                    <a href="https://www.tokopedia.com/senikersku/air-jordan-1-high-og-chicago-lost-and-found-100-authentic-40-5?extParam=ivf%3Dfalse%26keyword%3Dnike+airjordan%26search_id%3D202509031044259FD81843AD7F20214R1S%26src%3Dsearch%26whid%3D1524442&t_id=1756896288220&t_st=2&t_pp=search_result&t_efo=search_pure_goods_card&t_ef=goods_search&t_sm=&t_spt=search_result" target="_blank">
-                        Buy Now
-                    </a>
-                </button>
+                <a href="{% url 'main:show_product_detail' product.id %}">
+                    <img src="{{ product.thumbnail }}" alt="{{ product.title }}">
+                </a>
+                <div class="card-body">
+                <h3>{{ product.title }}</h3>
+                <p>{{ product.description|truncatewords:15 }}</p>
+                <div class="price">Rp {{ product.price|floatformat:0 }}</div>
+                    <div class="cta-row">
+                        <button>Details</button>
+                        <button>Buy Now</button>
+                    </div>
+                </div>
             </div>
-            <div class="card">
-                <img src="https://images.unsplash.com/photo-1542291026-7eec264c27ff?q=80&w=2070&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D" alt="Sepatu 2">
-                <div class="title">Nike Red</div>
-                <button class="cta">
-                    <a href="https://www.tokopedia.com/senikersku/air-jordan-1-high-og-chicago-lost-and-found-100-authentic-40-5?extParam=ivf%3Dfalse%26keyword%3Dnike+airjordan%26search_id%3D202509031044259FD81843AD7F20214R1S%26src%3Dsearch%26whid%3D1524442&t_id=1756896288220&t_st=2&t_pp=search_result&t_efo=search_pure_goods_card&t_ef=goods_search&t_sm=&t_spt=search_result" target="_blank">
-                        Buy Now
-                    </a>
-                </button>
-            </div>
-            <div class="card">
-                <img src="https://images.unsplash.com/photo-1600185365483-26d7a4cc7519?q=80&w=1925&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D" alt="Sepatu 3">
-                <div class="title">Nike Orange White</div>
-                <button class="cta">
-                    <a href="https://www.tokopedia.com/senikersku/air-jordan-1-high-og-chicago-lost-and-found-100-authentic-40-5?extParam=ivf%3Dfalse%26keyword%3Dnike+airjordan%26search_id%3D202509031044259FD81843AD7F20214R1S%26src%3Dsearch%26whid%3D1524442&t_id=1756896288220&t_st=2&t_pp=search_result&t_efo=search_pure_goods_card&t_ef=goods_search&t_sm=&t_spt=search_result" target="_blank">
-                        Buy Now
-                    </a>
-                </button>
-            </div>
-            <div class="card">
-                <img src="https://images.unsplash.com/photo-1731132198530-e4b2dc51d511?q=80&w=1632&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D" alt="Sepatu 4">
-                <div class="title">Nike AirJordan</div>
-                <button class="cta">
-                    <a href="https://www.tokopedia.com/senikersku/air-jordan-1-high-og-chicago-lost-and-found-100-authentic-40-5?extParam=ivf%3Dfalse%26keyword%3Dnike+airjordan%26search_id%3D202509031044259FD81843AD7F20214R1S%26src%3Dsearch%26whid%3D1524442&t_id=1756896288220&t_st=2&t_pp=search_result&t_efo=search_pure_goods_card&t_ef=goods_search&t_sm=&t_spt=search_result" target="_blank">
-                        Buy Now
-                    </a>
-                </button>
-            </div>
-            <div class="card">
-                <img src="https://images.unsplash.com/photo-1597045566677-8cf032ed6634?q=80&w=687&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D" alt="Sepatu 5">
-                <div class="title">Nike Traditions</div>
-                <button class="cta">
-                    <a href="https://www.tokopedia.com/senikersku/air-jordan-1-high-og-chicago-lost-and-found-100-authentic-40-5?extParam=ivf%3Dfalse%26keyword%3Dnike+airjordan%26search_id%3D202509031044259FD81843AD7F20214R1S%26src%3Dsearch%26whid%3D1524442&t_id=1756896288220&t_st=2&t_pp=search_result&t_efo=search_pure_goods_card&t_ef=goods_search&t_sm=&t_spt=search_result" target="_blank">
-                        Buy Now
-                    </a>
-                </button>
-            </div>
-        </div>
-        <div class="footer">
-            {{ name }} | {{ npm }} | {{ class }}
+            {% endfor %}
+        {% endif %}
         </div>
 
         <script>
@@ -298,6 +218,4 @@
                 start();
             })();
         </script>
-
-    </body>
-</html>
+    {% endblock content %}
