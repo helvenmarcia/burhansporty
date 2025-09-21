@@ -52,16 +52,17 @@
         }
 
         .navbar .user {
-            text-decoration: underscore;
+            text-decoration: underline;
             position: absolute;
             height: 100%;
             right: 25px;
             display: flex;
-            align-items: center; justify-content: center;
+            align-items: center;
+            justify-content: center;
             color: #222;
         }
-        
-        .navbar button {
+
+        .navbar .btn {
             background: linear-gradient(135deg, #4CAF50, #45a049);
             border: none;
             border-radius: 6px;
@@ -72,20 +73,25 @@
             cursor: pointer;
             transition: all 0.25s ease-in-out;
             box-shadow: 0 3px 6px rgba(0,0,0,0.15);
-            position: absolute;
-            right: 30vh;
-            bottom: 15px;
         }
 
-        .navbar button:hover {
+        .navbar .btn:hover {
             background: linear-gradient(135deg, #45a049, #3e9143);
             transform: translateY(-2px);
             box-shadow: 0 5px 10px rgba(0,0,0,0.2);
         }
 
-        .navbar button:active {
+        .navbar .btn:active {
             transform: translateY(0);
             box-shadow: 0 2px 5px rgba(0,0,0,0.15);
+        }
+
+        .navbar .actions {
+            position: absolute;
+            right: 200px;
+            display: flex;
+            gap: 12px;
+            bottom: 15px;
         }
 
         .footer {
@@ -96,6 +102,177 @@
             margin-top: 40px;
             font-size: 14px;
         }
+
+        .navbar .userbox {
+            position: absolute;
+            right: 40px;
+            height: 100%;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .user-trigger {
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+            padding: 8px 10px;
+            border-radius: 999px;
+            border: 1px solid rgba(0,0,0,.08);
+            background: #ffffffee;
+            box-shadow: 0 2px 8px rgba(0,0,0,.08);
+            cursor: pointer;
+            transition: transform .12s ease, box-shadow .12s ease, background .2s ease;
+            outline: none;
+        }
+        .user-trigger:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 6px 16px rgba(0,0,0,.16);
+        }
+        .user-trigger:focus-visible {
+            box-shadow: 0 0 0 3px rgba(76,175,80,.28);
+        }
+        .user-trigger .avatar {
+            width: 32px;
+            height: 32px;
+            border-radius: 999px;
+            object-fit: cover;
+            border: 1px solid rgba(0,0,0,.08);
+            background: #f4f4f4;
+        }
+        .user-trigger .name {
+            display: flex;
+            flex-direction: column;
+            line-height: 1.1;
+        }
+        .user-trigger .name .top {
+            font-weight: 700;
+            font-size: 13px;
+            color: #222;
+        }
+        .user-trigger .name .sub {
+            font-size: 11px;
+            color: #666;
+        }
+        .user-trigger .chev {
+            width: 10px;
+            height: 10px;
+            border-right: 2px solid #444;
+            border-bottom: 2px solid #444;
+            transform: rotate(45deg);
+            margin-left: 2px;
+            opacity: .8;
+        }
+
+        .dropdown-panel {
+            position: absolute;
+            top: calc(100% + 10px);
+            right: 0;
+            width: 300px;
+            background: #fff;
+            border-radius: 12px;
+            box-shadow: 0 14px 32px rgba(0,0,0,.16);
+            border: 1px solid rgba(0,0,0,.06);
+            overflow: hidden;
+            opacity: 0;
+            pointer-events: none;
+            transform: translateY(-6px);
+            transition: opacity .14s ease, transform .14s ease;
+            z-index: 1200;
+        }
+
+        .userbox.open .dropdown-panel {
+            opacity: 1;
+            pointer-events: auto;
+            transform: translateY(0);
+        }
+
+        .userbox:hover .dropdown-panel,
+        .userbox:focus-within .dropdown-panel {
+            opacity: 1;
+            pointer-events: auto;
+            transform: translateY(0);
+        }
+
+        .dp-header {
+            display: flex;
+            gap: 12px;
+            padding: 14px 14px 12px;
+            background: linear-gradient(135deg, #f8fff9, #ffffff);
+            border-bottom: 1px solid rgba(0,0,0,.06);
+        }
+        .dp-header .big-avatar {
+            width: 44px;
+            height: 44px;
+            border-radius: 999px;
+            object-fit: cover;
+            border: 1px solid rgba(0,0,0,.08);
+            background: #f4f4f4;
+        }
+        .dp-header .id {
+            display: flex;
+            flex-direction: column;
+            gap: 2px;
+        }
+        .dp-header .id .who {
+            font-weight: 800;
+            font-size: 14px;
+            color: #222;
+        }
+        .dp-header .id .meta {
+            font-size: 12px;
+            color: #555;
+        }
+        .dp-body {
+            padding: 12px 14px;
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 8px;
+        }
+        .kv {
+            display: flex;
+            justify-content: space-between;
+            gap: 10px;
+            font-size: 13px;
+        }
+        .kv .k { color: #666; }
+        .kv .v { font-weight: 600; color: #222; }
+        .dp-actions {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+            padding: 12px 14px 14px;
+            border-top: 1px solid rgba(0,0,0,.06);
+        }
+        .dp-actions a, .dp-actions button {
+            text-decoration: none;
+            text-align: center;
+            padding: 10px 12px;
+            border-radius: 10px;
+            font-weight: 700;
+            font-size: 13px;
+            cursor: pointer;
+            border: 1px solid rgba(0,0,0,.1);
+            background: #fff;
+            color: #222;
+            transition: transform .12s ease, box-shadow .12s ease, background .2s ease;
+        }
+        .dp-actions a:hover, .dp-actions button:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 10px 18px rgba(0,0,0,.12);
+        }
+        .dp-actions .logout {
+            background: linear-gradient(135deg, #ff6b6b, #ff4c4c);
+            color: #fff;
+            border: none;
+            box-shadow: 0 8px 16px rgba(255,76,76,.25);
+        }
+        .dp-actions .logout:hover {
+            box-shadow: 0 12px 20px rgba(255,76,76,.3);
+        }
+
+        .navbar a.user { display: none; }
+
     </style>
     {% block meta %} {% endblock meta %}
 </head>
@@ -104,15 +281,58 @@
         <div class="logo">
             <img src="https://i.imgur.com/wIo9Kxl.png" alt="BP">
         </div>
+
         <div class="title">{{ app }}</div>
-        <a href="{% url 'main:add_product' %}">
-            <button>+ Add Product</button>
-        </a>
-        <a class="user" href="https://www.instagram.com/hlvnnn/" target="_blank">{{ name }} | {{ npm }}</a>
+
+        
+        {% if user.is_authenticated %}
+        <div class="actions">
+            <a href="{% url 'main:add_product' %}">
+                <button class="btn">+</button>
+            </a>
+        </div>
+        <div class="userbox" id="userbox">
+            <button class="user-trigger" id="userTrigger" aria-haspopup="true" aria-expanded="false">
+                <img class="avatar" src="https://media.tenor.com/f7IxT80hTDoAAAAM/hmm-cat.gif" alt="User avatar">
+                <span class="name">
+                    <span class="top">{{ name|default:user.username }}</span>
+                    <span class="sub">{{ npm|default:"-" }}</span>
+                </span>
+                <span class="chev" aria-hidden="true"></span>
+            </button>
+
+            <div class="dropdown-panel" role="menu" aria-label="User menu">
+                <div class="dp-header">
+                    <img class="big-avatar" src="https://media.tenor.com/f7IxT80hTDoAAAAM/hmm-cat.gif" alt="User avatar">
+                    <div class="id">
+                        <span class="who">{{ name|default:user.username }}</span>
+                        <span class="meta">Signed in</span>
+                    </div>
+                </div>
+
+                <div class="dp-body">
+                    <div class="kv"><span class="k">Username</span><span class="v">{{ user.username }}</span></div>
+                    <div class="kv"><span class="k">NPM</span><span class="v">{{ npm|default:"-" }}</span></div>
+                    <div class="kv"><span class="k">Class</span><span class="v">{{ class|default:"-" }}</span></div>
+                    <div class="kv"><span class="k">Last login</span><span class="v">{{ last_login|default:"-" }}</span></div>
+                </div>
+
+                <div class="dp-actions">
+                    <a href="https://www.instagram.com/hlvnnn/" target="_blank" rel="noopener noreferrer">Instagram</a>
+                    <a href="{% url 'main:add_product' %}">Add Product</a>
+                    <a href="{% url 'main:show_main' %}?filter=my">My Dashboard</a>
+                    <a class="logout" href="{% url 'main:logout' %}">Logout</a>
+                </div>
+            </div>
+        </div>
+        {% endif %}
+
     </nav>
+
     {% block content %} {% endblock content %}
+
     <div class="footer">
-        {{ name }} | {{ npm }} | {{ class }}
+        Helven Marcia | 2406359853 | PBP C
     </div>
 </body>
 </html>

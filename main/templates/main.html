@@ -53,8 +53,7 @@
                 display: grid;
                 grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
                 gap: 25px;
-                padding: 40px 60px;
-                margin-top: 40px;
+                padding: 20px 60px;
             }
 
             .card {
@@ -116,51 +115,129 @@
                 cursor: pointer;
                 transition: all .25s ease;
             }
+
             .cta-row button:hover {
                 background: #e64343;
                 transform: translateY(-2px);
             }
+
+             .filters {
+                display: flex;
+                gap: 10px;
+                align-items: center;
+                padding: 0 60px;
+                margin-top: 90px;
+            }
+
+            .filters .pill {
+                display: inline-flex;
+                align-items: center;
+                justify-content: center;
+                padding: 10px 14px;
+                border-radius: 999px;
+                font-weight: 600;
+                text-decoration: none;
+                border: 1px solid rgba(0,0,0,.12);
+                background: #fff;
+                color: #222;
+                box-shadow: 0 2px 6px rgba(0,0,0,.06);
+                transition: transform .15s ease, box-shadow .15s ease, background .2s ease;
+            }
+
+            .filters .pill:hover {
+                transform: translateY(-1px);
+                box-shadow: 0 6px 16px rgba(0,0,0,.12);
+            }
+
+            .filters .pill.active {
+                border-color: transparent;
+                background: linear-gradient(135deg, #4CAF50, #45a049);
+                color: #fff;
+                box-shadow: 0 6px 14px rgba(76,175,80,.25);
+            }
+
+            .banner {
+                margin: 16px 60px 0;
+                padding: 10px 12px;
+                border: 1px solid #cfead4;
+                background: #eef9f0;
+                color: #205e26;
+                border-radius: 10px;
+                font-size: 14px;
+            }
+
+            .seller {
+                font-size: 12px;
+                color: #555;
+                margin-top: 2px;
+            }
         </style>
     {% endblock meta %}
     {% block content %}
-        {% if featured_products %}
+        {% if products %}
         <div class="hero">
-        {% for product in featured_products %}
+            {% for product in products %}
+            {% if product.is_featured %}
             <div class="hero-content">
-            <img src="{{ product.thumbnail }}" alt="{{ product.title }}">
-            <div class="overlay">
-                <h2>{{ product.title }}</h2>
-                <a href="{% url 'main:show_product_detail' product.id %}">
-                    <button class="buy-btn">View Product</button>
-                </a>
+                <img src="{{ product.thumbnail }}" alt="{{ product.title }}">
+                <div class="overlay">
+                    <h2>{{ product.title }}</h2>
+                    <a href="{% url 'main:show_product_detail' product.id %}">
+                        <button class="buy-btn">View Product</button>
+                    </a>
+                </div>
             </div>
-            </div>
-        {% endfor %}
+            {% endif %}
+            {% endfor %}
         </div>
         {% endif %}
 
+        {# === FILTER CONTROLS === #}
+        <div class="filters" role="tablist" aria-label="Product filter">
+            <a
+                href="?filter=all"
+                class="pill {% if current_filter != 'my' %}active{% endif %}"
+                role="tab"
+                aria-selected="{% if current_filter != 'my' %}true{% else %}false{% endif %}"
+            >All Products</a>
+
+            <a
+                href="?filter=my"
+                class="pill {% if current_filter == 'my' %}active{% endif %}"
+                role="tab"
+                aria-selected="{% if current_filter == 'my' %}true{% else %}false{% endif %}"
+            >My Products</a>
+        </div>
+
+        {% if current_filter == 'my' and not user.is_authenticated %}
+        <div class="banner">Please log in to see your products.</div>
+        {% endif %}
 
         <div class="list">
-        {% if not products %}
-            <p>No products available yet.</p>
-        {% else %}
-            {% for product in products %}
-            <div class="card">
-                <a href="{% url 'main:show_product_detail' product.id %}">
-                    <img src="{{ product.thumbnail }}" alt="{{ product.title }}">
-                </a>
-                <div class="card-body">
-                <h3>{{ product.title }}</h3>
-                <p>{{ product.description|truncatewords:15 }}</p>
-                <div class="price">Rp {{ product.price|floatformat:0 }}</div>
-                    <div class="cta-row">
-                        <button>Details</button>
-                        <button>Buy Now</button>
+            {% if not products %}
+                <p>No products available yet.</p>
+            {% else %}
+                {% for product in products %}
+                <div class="card">
+                    <a href="{% url 'main:show_product_detail' product.id %}">
+                        <img src="{{ product.thumbnail }}" alt="{{ product.title }}">
+                    </a>
+                    <div class="card-body">
+                        <h3>{{ product.title }}</h3>
+                        <div class="seller">Seller: {{ product.user.username|default:"Unknown" }}</div>
+                        <hr>
+                        <p>{{ product.description|truncatewords:15 }}</p>
+                        <div class="price">Rp {{ product.price|floatformat:0 }}</div>
+                        <div class="cta-row">
+                            <a href="{% url 'main:show_product_detail' product.id %}">
+                                <button>Details</button>
+                            </a>
+                            <button>Buy Now</button>
+                        </div>
                     </div>
                 </div>
-            </div>
-            {% endfor %}
-        {% endif %}
+                {% endfor %}
+            {% endif %}
         </div>
 
         <script>
