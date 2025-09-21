@@ -498,5 +498,15 @@ Penggunaan cookies tidak aman secara default, karena pada dasarnya cookies adala
 
 6. Melakukan penyesuaian tampilan pada page dengan mengedit file html
 
-<hr>
 </details>
+
+<hr>
+
+#### Main Page
+![Main Page](mainpage.png)
+
+#### All Products List
+![All Products List](allproductslist.png)
+
+#### My Products List
+![My Products List](myproductslist.png)
