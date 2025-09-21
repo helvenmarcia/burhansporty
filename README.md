@@ -352,14 +352,151 @@ Tidak ada 😄
 
 <hr>
 
-### Fetching JSON
+#### Fetching JSON
 ![JSON](json.jpeg)
 
-### Fetching XML
+#### Fetching XML
 ![XML](xml.jpeg)
 
-### Fetching JSON by ID
+#### Fetching JSON by ID
 ![JSONBYID](jsonbyid.jpeg)
 
-### Fetching XML by ID
+#### Fetching XML by ID
 ![XMLBYID](xmlbyid.jpeg)
+
+<hr style="border:1px solid">
+
+### Tugas 4
+
+<details>
+<summary>1. Apa itu Django AuthenticationForm? Jelaskan juga kelebihan dan kekurangannya.
+</summary>
+<hr>
+
+Django AuthenticationForm adalah form bawaan yang disediakan oleh Django untuk menangani proses autentikasi pengguna, khususnya pada saat login. Form ini berada di modul `django.contrib.auth.forms` dan secara default menyediakan field username serta password yang sudah terhubung dengan sistem autentikasi Django. Kelebihan dari AuthenticationForm adalah kemudahannya karena tidak perlu membuat form login dari nol, sudah terintegrasi dengan backend autentikasi Django, serta dilengkapi validasi otomatis seperti pengecekan kecocokan username dan password, status akun aktif, hingga keamanan dasar terhadap serangan brute force dengan hashing password. Namun, kekurangannya adalah fleksibilitas yang terbatas karena form ini hanya menyediakan field standar username dan password, sehingga jika ingin menambahkan logika khusus atau field tambahan seperti login dengan email atau OTP, developer perlu melakukan kustomisasi atau membuat form turunan dari AuthenticationForm.
+
+<hr>
+</details>
+
+<details>
+<summary>2. Apa perbedaan antara autentikasi dan otorisasi? Bagaiamana Django mengimplementasikan kedua konsep tersebut?
+</summary>
+<hr>
+
+Autentikasi adalah proses untuk memastikan identitas seseorang, yaitu langkah di mana sistem memverifikasi apakah pengguna benar-benar siapa yang ia klaim, biasanya melalui username, email, password, atau metode lain seperti token dan biometrik. Sedangkan otorisasi adalah tahap lanjutan setelah autentikasi berhasil, yaitu proses menentukan hak akses apa saja yang dimiliki pengguna tersebut di dalam sistem, misalnya apakah ia boleh melihat, mengubah, atau menghapus data tertentu. Dengan kata lain, autentikasi menjawab pertanyaan “siapa kamu?”, sementara otorisasi menjawab pertanyaan “apa yang boleh kamu lakukan?”.
+
+<hr>
+</details>
+
+<details>
+<summary>3. Apa saja kelebihan dan kekurangan session dan cookies dalam konteks menyimpan state di aplikasi web?
+</summary>
+<hr>
+
+Cookies dan session sama-sama digunakan untuk menyimpan state di aplikasi web, tetapi mekanismenya berbeda. Cookies disimpan di sisi klien (browser) sehingga mudah diakses dan berguna untuk kebutuhan sederhana seperti preferensi pengguna atau data yang tidak sensitif. Kelebihannya adalah ringan, tidak membebani server, dan dapat bertahan meski browser ditutup. Kekurangannya adalah rawan dimanipulasi, terbatas ukurannya, dan tidak aman untuk menyimpan data sensitif meskipun bisa dienkripsi. Session, sebaliknya, menyimpan data di sisi server dengan hanya menyimpan session ID di cookie klien. Kelebihannya adalah lebih aman karena data asli tidak berada di browser, mendukung penyimpanan data lebih kompleks, dan mudah dikontrol masa aktifnya. Kekurangannya adalah menambah beban server karena harus menyimpan state setiap pengguna, serta dapat hilang jika session dihapus atau server tidak stabil.
+
+<hr>
+</details>
+
+<details>
+<summary>4. Apakah penggunaan cookies aman secara default dalam pengembangan web, atau apakah ada risiko potensial yang harus diwaspadai? Bagaimana Django menangani hal tersebut?
+</summary>
+<hr>
+
+Penggunaan cookies tidak aman secara default, karena pada dasarnya cookies adalah data yang disimpan di browser pengguna dan bisa saja dilihat, dimodifikasi, atau dicuri jika tidak dijaga dengan benar. Risiko yang sering terjadi misalnya pencurian cookie saat terkirim lewat jaringan yang tidak aman, atau penyalahgunaan cookie oleh script berbahaya di browser.
+
+<hr>
+</details>
+
+<details>
+<summary>5. Jelaskan bagaimana cara kamu mengimplementasikan checklist di atas secara step-by-step (bukan hanya sekadar mengikuti tutorial).
+</summary>
+<hr>
+
+1. Menambahkan 3 function baru pada `views.py` yaitu register, login_user, logout_user
+    ```python
+    def register(request):
+        form = UserCreationForm()
+
+        if request.method == "POST":
+            form = UserCreationForm(request.POST)
+            if form.is_valid():
+                form.save()
+                messages.success(request, 'Your account has been successfully created!')
+                return redirect('main:login')
+        context = {'form':form, 'app': "BurhanSporty"}
+        return render(request, 'register.html', context)
+
+    def login_user(request):
+        if request.method == 'POST':
+                form = AuthenticationForm(data=request.POST)
+
+                if form.is_valid():
+                    user = form.get_user()
+                    login(request, user)
+                    response = HttpResponseRedirect(reverse("main:show_main"))
+                    response.set_cookie('last_login', str(datetime.datetime.now()))
+                    return response
+
+        else:
+                form = AuthenticationForm(request)
+        context = {'form': form, 'app': "BurhanSporty"}
+        return render(request, 'login.html', context)
+
+    def logout_user(request):
+        logout(request)
+        response = HttpResponseRedirect(reverse('main:login'))
+        response.delete_cookie('last_login')
+        return response
+    ```
+
+<hr>
+
+2. Menambahkan route pada `urls.py`
+    ```python
+    path('register/', register, name='register'),
+    path('login/', login_user, name='login'),
+    path('logout/', logout_user, name='logout'),
+    ```
+<hr>
+
+3. Menambahkan page untuk `register.html`, `login.html` dan beberapa action button.
+    ```html
+    ...
+    <a class="logout" href="{% url 'main:logout' %}">Logout</a>
+    ...
+    ```
+
+<hr>
+
+4. Menambahkan gate/middleware untuk restriction akses page utama dan page lainnya
+    ```python
+    ...
+    @login_required(login_url='/login')
+    def show_main(request):
+    ...
+    @login_required(login_url='/login')
+    def add_product(request):
+    ...
+    @login_required(login_url='/login')
+    def show_product_detail(request, id):
+    ...
+    ```
+
+<hr>
+
+5. Menambahkan field user pada model Product (dan melakukan migrate)
+    ```python
+    ...
+    from django.contrib.auth.models import User
+    ...
+    user = models.ForeignKey(User, on_delete=models.CASCADE, null=True)
+    ...
+    ```
+
+<hr>
+
+6. Melakukan penyesuaian tampilan pada page dengan mengedit file html
+
+<hr>
+</details>
