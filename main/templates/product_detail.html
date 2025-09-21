@@ -185,7 +185,11 @@
                 {% endif %}
 
                 <div class="actions">
-                    <button class="buy-btn">Buy</button>
+                    {% if product.user.username == name %}
+                    <button class="buy-btn">Edit Item</button>
+                    {% else %}
+                    <button class="buy-btn">Buy Now</button>
+                    {% endif %}
                     <a href="{% url 'main:show_main' %}">
                         <button class="ghost-btn">Back</button>
                     </a>
