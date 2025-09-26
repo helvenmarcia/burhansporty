@@ -55,6 +55,31 @@ def add_product(request):
     return render(request, "add_product.html", context)
 
 @login_required(login_url='/login')
+def edit_product(request, id):
+    product = get_object_or_404(Product, pk=id)
+    form = ProductForm(request.POST or None, instance=product)
+    if form.is_valid() and request.method == 'POST':
+        form.save()
+        return redirect('main:show_main')
+
+    context = {
+        'form': form,
+        'product': product,
+        'app' : "BurhanSporty",
+        'npm' : '2406359853',
+        'name': request.user.username,
+        'class': 'PBP C'
+    }
+
+    return render(request, "edit_product.html", context)
+
+@login_required(login_url='/login')
+def delete_product(request, id):
+    product = get_object_or_404(Product, pk=id)
+    product.delete()
+    return HttpResponseRedirect(reverse('main:show_main'))
+
+@login_required(login_url='/login')
 def show_product_detail(request, id):
     product = get_object_or_404(Product, pk=id)
 

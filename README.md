@@ -119,7 +119,7 @@
 <summary>2. Buatlah bagan yang berisi request client ke web aplikasi berbasis Django beserta responnya dan jelaskan pada bagan tersebut kaitan antara urls.py, views.py, models.py, dan berkas html.</summary>
 <hr>
 
-![Diagram Django](image.png)
+![Diagram Django](static/image/image.png)
 
 [Sumber: PPT PBP](https://scele.cs.ui.ac.id/pluginfile.php/269605/mod_resource/content/1/03%20-%20MTV%20Django%20Architecture.pdf)
 
@@ -353,16 +353,16 @@ Tidak ada 😄
 <hr>
 
 #### Fetching JSON
-![JSON](json.jpeg)
+![JSON](static/image/json.jpeg)
 
 #### Fetching XML
-![XML](xml.jpeg)
+![XML](static/image/xml.jpeg)
 
 #### Fetching JSON by ID
-![JSONBYID](jsonbyid.jpeg)
+![JSONBYID](static/image/jsonbyid.jpeg)
 
 #### Fetching XML by ID
-![XMLBYID](xmlbyid.jpeg)
+![XMLBYID](static/image/xmlbyid.jpeg)
 
 <hr style="border:1px solid">
 
@@ -503,10 +503,196 @@ Penggunaan cookies tidak aman secara default, karena pada dasarnya cookies adala
 <hr>
 
 #### Main Page
-![Main Page](mainpage.png)
+![Main Page](static/image/mainpage.png)
 
 #### All Products List
-![All Products List](allproductslist.png)
+![All Products List](static/image/allproductslist.png)
 
 #### My Products List
-![My Products List](myproductslist.png)
+![My Products List](static/image/myproductslist.png)
+
+
+### Tugas 5
+
+<details>
+<summary>1. Jika terdapat beberapa CSS selector untuk suatu elemen HTML, jelaskan urutan prioritas pengambilan CSS selector tersebut!
+</summary>
+<hr>
+
+Prioritas CSS ditentukan oleh tingkat spesifisitasnya. Aturan yang ditulis langsung di atribut elemen (inline style) memiliki prioritas paling tinggi, diikuti oleh selector berbasis ID, kemudian selector class, atribut, dan pseudo-class, lalu selector elemen atau tag. Selector universal, combinator, serta aturan yang diwariskan memiliki prioritas paling rendah. Jika terdapat dua aturan dengan tingkat spesifisitas yang sama, maka aturan yang ditulis paling akhir dalam urutan kode yang akan diterapkan.
+
+<hr>
+</details>
+
+<details>
+<summary>2. Mengapa responsive design menjadi konsep yang penting dalam pengembangan aplikasi web? Berikan contoh aplikasi yang sudah dan belum menerapkan responsive design, serta jelaskan mengapa!
+</summary>
+<hr>
+
+Responsive design penting dalam pengembangan aplikasi web karena pengguna mengakses aplikasi melalui berbagai perangkat dengan ukuran layar berbeda, seperti smartphone, tablet, dan desktop. Dengan responsive design, tampilan dan fungsi aplikasi dapat menyesuaikan secara otomatis sehingga tetap nyaman digunakan, meningkatkan pengalaman pengguna, serta mendukung aksesibilitas.
+
+<hr>
+</details>
+
+<details>
+<summary>3. Jelaskan perbedaan antara margin, border, dan padding, serta cara untuk mengimplementasikan ketiga hal tersebut!
+</summary>
+<hr>
+
+Margin, border, dan padding adalah bagian dari CSS box model yang mengatur ruang di sekitar elemen. Margin adalah jarak terluar yang memisahkan elemen dengan elemen lain di sekitarnya. Border adalah garis pembatas yang mengelilingi elemen dan berada di antara margin serta padding. Padding adalah ruang di dalam border yang memberi jarak antara konten elemen (seperti teks atau gambar) dengan garis border.
+
+Dalam Tailwind CSS, implementasi margin, border, dan padding dilakukan dengan utility class. Margin menggunakan prefix m, misalnya m-4 untuk semua sisi atau mt-2 untuk margin atas. Padding menggunakan prefix p, misalnya p-6 untuk semua sisi atau px-3 untuk padding horizontal. Border menggunakan prefix border, misalnya border untuk border default, border-2 untuk ketebalan, border-red-500 untuk warna, dan rounded-lg jika ingin sudut melengkung.
+
+<hr>
+</details>
+
+<details>
+<summary>4. Jelaskan konsep flex box dan grid layout beserta kegunaannya!
+</summary>
+<hr>
+
+Flexbox dan Grid Layout adalah dua sistem tata letak (layout) di CSS yang memudahkan pengaturan posisi elemen. Flexbox berfokus pada tata letak satu dimensi, yaitu mengatur elemen dalam baris (row) atau kolom (column). Flexbox sangat berguna untuk membuat alignment horizontal atau vertikal, mendistribusikan ruang antar elemen, serta membuat layout yang fleksibel sesuai ukuran layar, misalnya pada navbar, tombol, atau card yang tersusun rapi.
+
+Sementara itu, Grid Layout berfokus pada tata letak dua dimensi, yaitu baris (rows) dan kolom (columns) sekaligus. Grid memungkinkan kita membuat struktur halaman yang kompleks dengan mudah, seperti membagi area header, sidebar, konten utama, dan footer. Kegunaannya sangat efektif untuk membuat layout halaman penuh atau komponen yang membutuhkan kontrol posisi lebih presisi.
+
+<hr>
+</details>
+
+<details>
+<summary>5. Jelaskan bagaimana cara kamu mengimplementasikan checklist di atas secara step-by-step (bukan hanya sekadar mengikuti tutorial).
+</summary>
+<hr>
+
+
+1. Menambahkan setting pada `settings.py` untuk enabling penggunaan static
+    ```python
+    MIDDLEWARE = [
+        'django.middleware.security.SecurityMiddleware',
+        'django.contrib.sessions.middleware.SessionMiddleware',
+        'django.middleware.common.CommonMiddleware',
+        'django.middleware.csrf.CsrfViewMiddleware',
+        'django.contrib.auth.middleware.AuthenticationMiddleware',
+        'django.contrib.messages.middleware.MessageMiddleware',
+        'django.middleware.clickjacking.XFrameOptionsMiddleware',
+        'whitenoise.middleware.WhiteNoiseMiddleware', 
+    ]
+    ```
+    ```python
+    STATIC_URL = '/static/'
+    if DEBUG:
+        STATICFILES_DIRS = [
+            BASE_DIR / 'static' # merujuk ke /static root project pada mode development
+        ]
+    else:
+        STATIC_ROOT = BASE_DIR / 'static' # merujuk ke /static root project pada mode production
+    ```
+<hr>
+
+
+2. Menambahkan import tailwind melalui script
+    ```html
+    ...
+    <script src="https://cdn.tailwindcss.com"></script>
+    ...
+    ```
+<hr>
+
+3. Menambahkan 2 function baru pada `views.py` yaitu edit_product, delete_product
+    ```python
+    @login_required(login_url='/login')
+    def edit_product(request, id):
+        product = get_object_or_404(Product, pk=id)
+        form = ProductForm(request.POST or None, instance=product)
+        if form.is_valid() and request.method == 'POST':
+            form.save()
+            return redirect('main:show_main')
+
+        context = {
+            'form': form,
+            'product': product,
+            'app' : "BurhanSporty",
+            'npm' : '2406359853',
+            'name': request.user.username,
+            'class': 'PBP C'
+        }
+
+        return render(request, "edit_product.html", context)
+
+    @login_required(login_url='/login')
+    def delete_product(request, id):
+        product = get_object_or_404(Product, pk=id)
+        product.delete()
+        return HttpResponseRedirect(reverse('main:show_main'))
+    ```
+
+<hr>
+
+4. Menambahkan route pada `urls.py`
+    ```python
+    path('products/<str:id>/edit', edit_product, name='edit_product'),
+    path('products/<str:id>/delete', delete_product, name='delete_product'),
+    ```
+<hr>
+
+5. Menambahkan page untuk `edit_product.html` dan 2 action button yang merujuk pada url edit dan delete.
+    ```html
+    ...
+    <a href="{% url 'main:edit_product' product.id %}"
+        class="inline-flex items-center rounded-md bg-blue-600 text-white text-sm font-semibold px-3 py-2 hover:-translate-y-0.5 hover:shadow transition">
+        Edit
+    </a>
+    <a href="{% url 'main:delete_product' product.id %}"
+        onclick="return confirm('Delete this product?');"
+        class="inline-flex items-center rounded-md bg-red-600 text-white text-sm font-semibold px-3 py-2 hover:-translate-y-0.5 hover:shadow transition">
+        Delete
+    </a>
+    ...
+    ```
+
+<hr>
+
+6. Melakukan implementasi design. Karena pada week-week sebelumnya saya sudah melakukan implementasi design menggunakan internal CSS, pada tugas 5 ini saya hanya melakukan refactoring. Misalnya CSS seperti ini
+    ```html
+    <style>
+        .btn {
+            background: linear-gradient(135deg, #4CAF50, #45a049);
+            border: none;
+            border-radius: 6px;
+            color: #fff;
+            padding: 10px 18px;
+            font-size: 15px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all .25s ease-in-out;
+            box-shadow: 0 3px 6px rgba(0,0,0,0.15);
+        }
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 10px rgba(0,0,0,0.2);
+        }
+        .btn:active {
+            transform: translateY(0);
+            box-shadow: 0 2px 5px rgba(0,0,0,0.15);
+        }
+    </style>
+    ...
+    <button class="btn">Add Product</button>
+
+    ```
+    Direfactor menggunakan tailwind menjadi
+    ```html
+    ...
+    <button
+        class="bg-gradient-to-br from-[#4CAF50] to-[#45a049]
+            border-0 rounded-[6px] text-white
+            px-[18px] py-[10px] text-[15px] font-semibold
+            cursor-pointer transition-all duration-200
+            shadow-[0_3px_6px_rgba(0,0,0,0.15)]
+            hover:-translate-y-[2px] hover:shadow-[0_5px_10px_rgba(0,0,0,0.2)]
+            active:translate-y-0 active:shadow-[0_2px_5px_rgba(0,0,0,0.15)]">
+        Add Product
+    </button>
+    ...
+    ```
+
+</details>

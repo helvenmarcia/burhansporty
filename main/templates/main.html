@@ -1,304 +1,133 @@
 {% extends 'base.html' %}
-    {% block meta %}
-        <title>BurhanSporty</title>
-        <style>
-            .hero {
-                height: calc(100vh - 70px);
-                margin-top: 70px;
-                overflow: hidden;
-                display: flex;
-                scroll-snap-type: x mandatory;
-                scroll-behavior: smooth;
-            }
-            .hero-content {
-                flex: 0 0 100%;
-                height: 100%;
-                position: relative;
-                scroll-snap-align: start;
-            }
-            .hero-content img {
-                width: 100%;
-                height: 100%;
-                object-fit: cover;
-                filter: brightness(70%);
-            }
-            .hero-content .overlay {
-                position: absolute;
-                bottom: 50px;
-                left: 50px;
-                color: #fff;
-            }
-            .hero-content .overlay h2 {
-                font-size: 36px;
-                font-weight: 700;
-                margin-bottom: 10px;
-            }
-            .hero-content .overlay .buy-btn {
-                background: linear-gradient(135deg, #4CAF50, #45a049);
-                border: none;
-                border-radius: 8px;
-                padding: 12px 20px;
-                color: #fff;
-                font-weight: 600;
-                cursor: pointer;
-                transition: all .25s ease;
-            }
-            .hero-content .overlay .buy-btn:hover {
-                transform: translateY(-2px);
-                box-shadow: 0 6px 14px rgba(0,0,0,.2);
-            }
+{% block meta %}
+    <title>BurhanSporty</title>
+{% endblock meta %}
 
-            /* --- PRODUCT GRID --- */
-            .list {
-                display: grid;
-                grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-                gap: 25px;
-                padding: 20px 60px;
-            }
-
-            .card {
-                position: relative;
-                border-radius: 12px;
-                overflow: hidden;
-                box-shadow: 0 6px 15px rgba(0, 0, 0, 0.1);
-                background-color: white;
-                transition: transform 0.3s ease, box-shadow 0.3s ease;
-                cursor: pointer;
-                display: flex;
-                flex-direction: column;
-            }
-            .card img {
-                width: 100%;
-                height: 250px;
-                object-fit: cover;
-                transition: transform 0.5s ease;
-            }
-            .card:hover img { transform: scale(1.05); }
-
-            .card-body {
-                padding: 16px;
-                display: flex;
-                flex-direction: column;
-                gap: 8px;
-                padding-bottom: 60px;
-            }
-            .card-body h3 {
-                font-size: 18px;
-                font-weight: 600;
-                color: #222;
-            }
-            .card-body p {
-                font-size: 14px;
-                color: #555;
-                line-height: 1.4;
-            }
-            .price {
-                font-weight: 700;
-                font-size: 16px;
-                color: #4CAF50;
-            }
-            .cta-row {
-                margin-top: auto;
-                display: flex; position: absolute;
-                justify-content: space-between;
-                align-items: center;
-                bottom: 18px; gap: 82px;
-            }
-            .cta-row a {
-                text-decoration: none;
-            }
-            .cta-row button {
-                background: #ff4c4c;
-                color: #fff;
-                border: none;
-                border-radius: 6px;
-                padding: 8px 14px;
-                font-weight: 600;
-                cursor: pointer;
-                transition: all .25s ease;
-            }
-
-            .cta-row button:hover {
-                background: #e64343;
-                transform: translateY(-2px);
-            }
-
-             .filters {
-                display: flex;
-                gap: 10px;
-                align-items: center;
-                padding: 0 60px;
-                margin-top: 90px;
-            }
-
-            .filters .pill {
-                display: inline-flex;
-                align-items: center;
-                justify-content: center;
-                padding: 10px 14px;
-                border-radius: 999px;
-                font-weight: 600;
-                text-decoration: none;
-                border: 1px solid rgba(0,0,0,.12);
-                background: #fff;
-                color: #222;
-                box-shadow: 0 2px 6px rgba(0,0,0,.06);
-                transition: transform .15s ease, box-shadow .15s ease, background .2s ease;
-            }
-
-            .filters .pill:hover {
-                transform: translateY(-1px);
-                box-shadow: 0 6px 16px rgba(0,0,0,.12);
-            }
-
-            .filters .pill.active {
-                border-color: transparent;
-                background: linear-gradient(135deg, #4CAF50, #45a049);
-                color: #fff;
-                box-shadow: 0 6px 14px rgba(76,175,80,.25);
-            }
-
-            .banner {
-                margin: 16px 60px 0;
-                padding: 10px 12px;
-                border: 1px solid #cfead4;
-                background: #eef9f0;
-                color: #205e26;
-                border-radius: 10px;
-                font-size: 14px;
-            }
-
-            .seller {
-                font-size: 12px;
-                color: #555;
-                margin-top: 2px;
-            }
-        </style>
-    {% endblock meta %}
-    {% block content %}
-        {% if products %}
-        <div class="hero">
+{% block content %}
+    <!-- hero -->
+    {% if products %}
+    <section id="home" class="h-[calc(100vh-70px)]">
+        <div id="hero" class="h-full flex snap-x snap-mandatory overflow-x-hidden scroll-smooth">
             {% for product in products %}
-            {% if product.is_featured %}
-            <div class="hero-content">
-                <img src="{{ product.thumbnail }}" alt="{{ product.title }}">
-                <div class="overlay">
-                    <h2>{{ product.title }}</h2>
-                    <a href="{% url 'main:show_product_detail' product.id %}">
-                        <button class="buy-btn">View Product</button>
-                    </a>
+                {% if product.is_featured %}
+                <div class="relative snap-start shrink-0 w-full h-full">
+                    <img src="{{ product.thumbnail }}" alt="{{ product.title }}" class="w-full h-full object-cover brightness-75">
+                    <div class="absolute bottom-12 left-12 text-white space-y-3">
+                        <h2 class="text-3xl sm:text-4xl font-bold">{{ product.title }}</h2>
+                        <a href="{% url 'main:show_product_detail' product.id %}"
+                           class="inline-flex items-center rounded-lg bg-gradient-to-br from-green-500 to-green-600 text-white font-semibold shadow px-5 py-3 hover:-translate-y-0.5 hover:shadow-lg transition">
+                            View Product
+                        </a>
+                    </div>
+                </div>
+                {% endif %}
+            {% endfor %}
+        </div>
+    </section>
+    {% endif %}
+
+    <!-- filters -->
+    <div class="max-w-7xl mx-auto px-6 mt-8 flex items-center gap-3" role="tablist" aria-label="Product filter">
+        <a href="?filter=all"
+           class="inline-flex items-center justify-center rounded-full px-4 py-2 font-semibold border border-black/10 shadow text-gray-800 bg-white hover:-translate-y-0.5 hover:shadow-md transition {% if current_filter != 'my' %}!bg-gradient-to-br from-green-500 to-green-600 text-white border-transparent{% endif %}"
+           role="tab"
+           aria-selected="{% if current_filter != 'my' %}true{% else %}false{% endif %}">
+            All Products
+        </a>
+        <a href="?filter=my"
+           class="inline-flex items-center justify-center rounded-full px-4 py-2 font-semibold border border-black/10 shadow text-gray-800 bg-white hover:-translate-y-0.5 hover:shadow-md transition {% if current_filter == 'my' %}!bg-gradient-to-br from-green-500 to-green-600 text-white border-transparent{% endif %}"
+           role="tab"
+           aria-selected="{% if current_filter == 'my' %}true{% else %}false{% endif %}">
+            My Products
+        </a>
+    </div>
+
+    {% if current_filter == 'my' and not user.is_authenticated %}
+    <div class="max-w-7xl mx-auto px-6 mt-3">
+        <div class="rounded-xl border border-emerald-200 bg-emerald-50 text-emerald-800 text-sm px-4 py-3">
+            Please log in to see your products.
+        </div>
+    </div>
+    {% endif %}
+
+    <!-- products -->
+    <section id="products" class="max-w-7xl mx-auto px-6 py-6">
+        {% if not products %}
+            <p class="text-gray-600">No products available yet.</p>
+        {% else %}
+        <div class="grid gap-6 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
+            {% for product in products %}
+            <div class="group bg-white rounded-xl shadow hover:shadow-xl transition overflow-hidden flex flex-col">
+                <a href="{% url 'main:show_product_detail' product.id %}" class="block overflow-hidden">
+                    <img src="{{ product.thumbnail }}" alt="{{ product.title }}" class="w-full h-60 object-cover transition duration-500 group-hover:scale-105">
+                </a>
+                <div class="p-4 flex flex-col gap-2">
+                    <h3 class="text-lg font-semibold text-gray-900">{{ product.title }}</h3>
+                    <div class="text-xs text-gray-600">Seller: {{ product.user.username|default:"Unknown" }}</div>
+                    <p class="text-sm text-gray-600">{{ product.description|truncatewords:15 }}</p>
+                    <div class="mt-1 font-bold text-emerald-600">Rp {{ product.price|floatformat:0 }}</div>
+
+                    <div class="mt-3 flex flex-wrap gap-2">
+                        <a href="{% url 'main:show_product_detail' product.id %}"
+                           class="inline-flex items-center rounded-md bg-gray-900 text-white text-sm font-semibold px-3 py-2 hover:-translate-y-0.5 hover:shadow transition">
+                            Details
+                        </a>
+
+                        {% if user.is_authenticated and product.user == user %}
+                            <a href="{% url 'main:edit_product' product.id %}"
+                               class="inline-flex items-center rounded-md bg-blue-600 text-white text-sm font-semibold px-3 py-2 hover:-translate-y-0.5 hover:shadow transition">
+                                Edit
+                            </a>
+                            <a href="{% url 'main:delete_product' product.id %}"
+                               onclick="return confirm('Delete this product?');"
+                               class="inline-flex items-center rounded-md bg-red-600 text-white text-sm font-semibold px-3 py-2 hover:-translate-y-0.5 hover:shadow transition">
+                                Delete
+                            </a>
+                        {% else %}
+                            <button type="button"
+                                    class="inline-flex items-center rounded-md bg-gradient-to-br from-rose-500 to-red-600 text-white text-sm font-semibold px-3 py-2 hover:-translate-y-0.5 hover:shadow transition">
+                                Buy Now
+                            </button>
+                        {% endif %}
+                    </div>
                 </div>
             </div>
-            {% endif %}
             {% endfor %}
         </div>
         {% endif %}
+    </section>
 
-        {# === FILTER CONTROLS === #}
-        <div class="filters" role="tablist" aria-label="Product filter">
-            <a
-                href="?filter=all"
-                class="pill {% if current_filter != 'my' %}active{% endif %}"
-                role="tab"
-                aria-selected="{% if current_filter != 'my' %}true{% else %}false{% endif %}"
-            >All Products</a>
+    <script>
+        (function () {
+            const hero = document.getElementById('hero');
+            if (!hero) return;
+            const slides = Array.from(hero.children);
+            if (slides.length <= 1) return;
 
-            <a
-                href="?filter=my"
-                class="pill {% if current_filter == 'my' %}active{% endif %}"
-                role="tab"
-                aria-selected="{% if current_filter == 'my' %}true{% else %}false{% endif %}"
-            >My Products</a>
-        </div>
+            let index = 0, timer = null, intervalMs = 2500;
+            function goTo(i){
+                index = (i + slides.length) % slides.length;
+                hero.scrollTo({ left: hero.clientWidth * index, behavior: 'smooth' });
+            }
+            function start(){ stop(); timer = setInterval(() => goTo(index + 1), intervalMs); }
+            function stop(){ if (timer) clearInterval(timer); timer = null; }
 
-        {% if current_filter == 'my' and not user.is_authenticated %}
-        <div class="banner">Please log in to see your products.</div>
-        {% endif %}
+            hero.addEventListener('mouseenter', stop);
+            hero.addEventListener('mouseleave', start);
+            window.addEventListener('resize', () => goTo(index));
+            document.addEventListener('visibilitychange', () => document.hidden ? stop() : start());
 
-        <div class="list">
-            {% if not products %}
-                <p>No products available yet.</p>
-            {% else %}
-                {% for product in products %}
-                <div class="card">
-                    <a href="{% url 'main:show_product_detail' product.id %}">
-                        <img src="{{ product.thumbnail }}" alt="{{ product.title }}">
-                    </a>
-                    <div class="card-body">
-                        <h3>{{ product.title }}</h3>
-                        <div class="seller">Seller: {{ product.user.username|default:"Unknown" }}</div>
-                        <hr>
-                        <p>{{ product.description|truncatewords:15 }}</p>
-                        <div class="price">Rp {{ product.price|floatformat:0 }}</div>
-                        <div class="cta-row">
-                            <a href="{% url 'main:show_product_detail' product.id %}">
-                                <button>Details</button>
-                            </a>
-                            {% if product.user.username == name %}
-                            <button>Edit Item</button>
-                            {% else %}
-                            <button>Buy Now</button>
-                            {% endif %}
-                        </div>
-                    </div>
-                </div>
-                {% endfor %}
-            {% endif %}
-        </div>
-
-        <script>
-            (function () {
-                const hero = document.querySelector('.hero');
-                const slides = Array.from(document.querySelectorAll('.hero .hero-content'));
-                if (!hero || slides.length <= 1) return;
-
-                let index = 0;
-                let timer = null;
-                const intervalMs = 2000;
-
-                function goTo(i) {
-                    index = (i + slides.length) % slides.length;
-                    hero.scrollTo({
-                        left: hero.clientWidth * index,
-                        behavior: 'smooth'
-                    });
-                }
-
-                function start() {
-                    stop();
-                    timer = setInterval(() => goTo(index + 1), intervalMs);
-                }
-                function stop() {
-                    if (timer) clearInterval(timer);
-                    timer = null;
-                }
-
-                hero.addEventListener('mouseenter', stop);
-                hero.addEventListener('mouseleave', start);
-
-                window.addEventListener('resize', () => goTo(index));
-
-                document.addEventListener('visibilitychange', () => {
-                    if (document.hidden) stop(); else start();
-                });
-
-                let startX = 0, dx = 0;
-                hero.addEventListener('touchstart', (e) => {
-                    stop();
-                    startX = e.touches[0].clientX;
-                    dx = 0;
-                }, { passive: true });
-                    hero.addEventListener('touchmove', (e) => {
-                    dx = e.touches[0].clientX - startX;
-                }, { passive: true });
-                hero.addEventListener('touchend', () => {
-                    const threshold = hero.clientWidth * 0.15;
-                    if (dx > threshold) goTo(index - 1);
-                    else if (dx < -threshold) goTo(index + 1);
-                    start();
-                });
-
+            let startX = 0, dx = 0;
+            hero.addEventListener('touchstart', (e) => { stop(); startX = e.touches[0].clientX; dx = 0; }, { passive: true });
+            hero.addEventListener('touchmove', (e) => { dx = e.touches[0].clientX - startX; }, { passive: true });
+            hero.addEventListener('touchend', () => {
+                const threshold = hero.clientWidth * 0.15;
+                if (dx > threshold) goTo(index - 1);
+                else if (dx < -threshold) goTo(index + 1);
                 start();
-            })();
-        </script>
-    {% endblock content %}
+            });
+
+            start();
+        })();
+    </script>
+{% endblock content %}

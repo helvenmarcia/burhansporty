@@ -1,0 +1,176 @@
+{% extends 'base.html' %}
+
+{% block meta %}
+    <title>Edit: {{ product.title }}</title>
+{% endblock meta %}
+
+{% block content %}
+    <main class="px-4">
+        <section class="max-w-5xl mx-auto mt-10 sm:mt-14 bg-white border border-black/5 rounded-2xl shadow-xl overflow-hidden">
+            <header class="px-6 pt-6 pb-3 bg-gradient-to-br from-gray-50 to-white border-b border-black/5">
+                <h1 class="text-2xl font-bold text-gray-900">Edit Product</h1>
+                <p class="text-sm text-gray-600 mt-1 line-clamp-1">Updating: {{ product.title }}</p>
+            </header>
+
+            {% if form.non_field_errors %}
+            <div class="px-6 pt-4">
+                <div class="text-sm text-red-700 bg-red-50 border border-red-200 rounded-lg px-3 py-2">
+                    {{ form.non_field_errors }}
+                </div>
+            </div>
+            {% endif %}
+
+            {% if messages %}
+            <ul class="px-6 pt-4 space-y-2">
+                {% for message in messages %}
+                <li class="text-sm text-emerald-800 bg-emerald-50 border border-emerald-200 rounded-lg px-3 py-2">
+                    {{ message }}
+                </li>
+                {% endfor %}
+            </ul>
+            {% endif %}
+
+            <div class="px-6 py-6">
+                <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                    <!-- form -->
+                    <form method="POST" class="lg:col-span-2 space-y-5">
+                        {% csrf_token %}
+
+                        <div>
+                            <label for="id_title" class="block text-sm font-semibold text-gray-800 mb-1">Title</label>
+                            <input type="text" name="title" id="id_title"
+                                   value="{{ form.title.value|default_if_none:'' }}"
+                                   class="w-full rounded-lg border border-gray-300 px-3 py-2 text-gray-900 placeholder-gray-400 outline-none focus:ring-4 focus:ring-emerald-300 focus:border-emerald-500">
+                            {% if form.title.errors %}
+                            <p class="mt-1 text-sm text-red-600">{{ form.title.errors|striptags }}</p>
+                            {% endif %}
+                        </div>
+
+                        <div>
+                            <label for="id_price" class="block text-sm font-semibold text-gray-800 mb-1">Price (IDR)</label>
+                            <input type="number" name="price" id="id_price" min="0" step="1"
+                                   value="{{ form.price.value|default_if_none:'' }}"
+                                   class="w-full rounded-lg border border-gray-300 px-3 py-2 text-gray-900 outline-none focus:ring-4 focus:ring-emerald-300 focus:border-emerald-500">
+                            {% if form.price.errors %}
+                            <p class="mt-1 text-sm text-red-600">{{ form.price.errors|striptags }}</p>
+                            {% endif %}
+                        </div>
+
+                        <div>
+                            <label for="id_thumbnail" class="block text-sm font-semibold text-gray-800 mb-1">Thumbnail URL</label>
+                            <input type="url" name="thumbnail" id="id_thumbnail"
+                                   value="{{ form.thumbnail.value|default_if_none:'' }}"
+                                   placeholder="https://..."
+                                   class="w-full rounded-lg border border-gray-300 px-3 py-2 text-gray-900 outline-none focus:ring-4 focus:ring-emerald-300 focus:border-emerald-500">
+                            {% if form.thumbnail.errors %}
+                            <p class="mt-1 text-sm text-red-600">{{ form.thumbnail.errors|striptags }}</p>
+                            {% endif %}
+                        </div>
+
+                        {# If your model/form uses free-text category (no choices) #}
+                        <div>
+                            <label for="id_category" class="block text-sm font-semibold text-gray-800 mb-1">Category</label>
+                            <input type="text" name="category" id="id_category"
+                                   value="{{ form.category.value|default_if_none:'' }}"
+                                   placeholder="e.g., clothes, shoes, accessories"
+                                   class="w-full rounded-lg border border-gray-300 px-3 py-2 bg-white text-gray-900 outline-none focus:ring-4 focus:ring-emerald-300 focus:border-emerald-500">
+                            {% if form.category.errors %}
+                            <p class="mt-1 text-sm text-red-600">{{ form.category.errors|striptags }}</p>
+                            {% endif %}
+                        </div>
+
+                        <div>
+                            <label for="id_description" class="block text-sm font-semibold text-gray-800 mb-1">Description</label>
+                            <textarea name="description" id="id_description" rows="4"
+                                      class="w-full rounded-lg border border-gray-300 px-3 py-2 text-gray-900 placeholder-gray-400 outline-none focus:ring-4 focus:ring-emerald-300 focus:border-emerald-500">{{ form.description.value }}</textarea>
+                            {% if form.description.errors %}
+                            <p class="mt-1 text-sm text-red-600">{{ form.description.errors|striptags }}</p>
+                            {% endif %}
+                        </div>
+
+                        <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
+                            <div>
+                                <label for="id_sold" class="block text-sm font-semibold text-gray-800 mb-1">Sold</label>
+                                <input type="number" name="sold" id="id_sold" min="0" step="1"
+                                       value="{{ form.sold.value|default_if_none:'' }}"
+                                       class="w-full rounded-lg border border-gray-300 px-3 py-2 text-gray-900 outline-none focus:ring-4 focus:ring-emerald-300 focus:border-emerald-500">
+                                {% if form.sold.errors %}
+                                <p class="mt-1 text-sm text-red-600">{{ form.sold.errors|striptags }}</p>
+                                {% endif %}
+                            </div>
+
+                            <div>
+                                <label for="id_stock" class="block text-sm font-semibold text-gray-800 mb-1">Stock</label>
+                                <input type="number" name="stock" id="id_stock" min="0" step="1"
+                                       value="{{ form.stock.value|default_if_none:'' }}"
+                                       class="w-full rounded-lg border border-gray-300 px-3 py-2 text-gray-900 outline-none focus:ring-4 focus:ring-emerald-300 focus:border-emerald-500">
+                                {% if form.stock.errors %}
+                                <p class="mt-1 text-sm text-red-600">{{ form.stock.errors|striptags }}</p>
+                                {% endif %}
+                            </div>
+
+                            <div class="flex items-end">
+                                <label for="id_is_featured" class="inline-flex items-center gap-2">
+                                    <input type="checkbox" name="is_featured" id="id_is_featured"
+                                           {% if form.is_featured.value %}checked{% endif %}
+                                           class="h-4 w-4 rounded border-gray-300 text-emerald-600 focus:ring-emerald-400">
+                                    <span class="text-sm font-semibold text-gray-800">Featured</span>
+                                </label>
+                            </div>
+                        </div>
+
+                        <div class="flex flex-wrap items-center justify-between gap-3 pt-2">
+                            <div class="flex items-center gap-2">
+                                <a href="{% url 'main:show_product_detail' product.id %}"
+                                   class="text-sm font-semibold text-gray-600 hover:underline">
+                                    Cancel
+                                </a>
+                                {% if user.is_authenticated and product.user == user %}
+                                <a href="{% url 'main:delete_product' product.id %}"
+                                   onclick="return confirm('Delete this product?');"
+                                   class="inline-flex items-center rounded-lg bg-red-600 text-white text-sm font-bold px-3 py-2.5 shadow hover:-translate-y-0.5 hover:shadow-lg transition">
+                                    Delete
+                                </a>
+                                {% endif %}
+                            </div>
+
+                            <button type="submit"
+                                    class="inline-flex items-center rounded-lg bg-gradient-to-br from-green-500 to-green-600 text-white font-bold px-4 py-2.5 shadow hover:-translate-y-0.5 hover:shadow-lg transition">
+                                Save changes
+                            </button>
+                        </div>
+                    </form>
+
+                    <!-- preview -->
+                    <aside class="lg:col-span-1">
+                        <div class="rounded-xl border border-gray-200 overflow-hidden bg-gray-50">
+                            <div class="p-3 border-b border-gray-200">
+                                <h2 class="text-sm font-semibold text-gray-700">Current Thumbnail</h2>
+                            </div>
+                            <div class="aspect-[4/3] bg-gray-100">
+                                {% if product.thumbnail %}
+                                    <img src="{{ product.thumbnail }}" alt="{{ product.title }} thumbnail" class="w-full h-full object-cover">
+                                {% else %}
+                                    <img src="https://via.placeholder.com/800x600?text=No+Image" alt="No image" class="w-full h-full object-cover">
+                                {% endif %}
+                            </div>
+                            <div class="p-3 text-xs text-gray-600">
+                                This preview shows the current thumbnail URL saved on the product.
+                            </div>
+                        </div>
+
+                        <div class="mt-4 rounded-xl border border-gray-200 bg-white p-3">
+                            <h3 class="text-sm font-semibold text-gray-800 mb-2">Quick Info</h3>
+                            <ul class="text-sm text-gray-700 space-y-1">
+                                <li><span class="text-gray-500">Category:</span> {{ product.get_category_display|default:product.category }}</li>
+                                <li><span class="text-gray-500">Stock:</span> {{ product.stock }}</li>
+                                <li><span class="text-gray-500">Sold:</span> {{ product.sold }}</li>
+                                <li><span class="text-gray-500">Featured:</span> {% if product.is_featured %}Yes{% else %}No{% endif %}</li>
+                            </ul>
+                        </div>
+                    </aside>
+                </div>
+            </div>
+        </section>
+    </main>
+{% endblock content %}

@@ -1,208 +1,68 @@
 {% extends 'base.html' %}
 
 {% block meta %}
-<title>Register</title>
-<style>
-    .page {
-        min-height: calc(100vh - 70px - 60px); /* navbar height + footer approx */
-        padding: 100px 16px 24px; /* push below fixed navbar */
-        display: grid;
-        place-items: start center;
-    }
-
-    .card {
-        width: min(520px, 100%);
-        background: #fff;
-        border-radius: 14px;
-        box-shadow: 0 12px 30px rgba(0,0,0,.08);
-        overflow: hidden;
-        border: 1px solid rgba(0,0,0,.05);
-    }
-
-    .card-header {
-        padding: 24px 24px 8px;
-        background: linear-gradient(135deg, #f7f7f7, #ffffff);
-    }
-    .card-header h1 {
-        font-size: 24px;
-        line-height: 1.2;
-    }
-    .card-sub {
-        color: #555;
-        font-size: 14px;
-        margin-top: 6px;
-    }
-
-    .card-body {
-        padding: 20px 24px 8px;
-    }
-
-    /* Form table -> clean vertical form */
-    form table {
-        width: 100%;
-        border-collapse: collapse;
-    }
-    form tr {
-        display: grid;
-        grid-template-columns: 1fr;
-        gap: 6px;
-        margin-bottom: 14px;
-    }
-    form td {
-        border: 0;
-        padding: 0;
-    }
-    label {
-        font-weight: 600;
-        font-size: 14px;
-        color: #222;
-    }
-    input[type="text"],
-    input[type="email"],
-    input[type="password"] {
-        width: 100%;
-        padding: 12px 14px;
-        font-size: 15px;
-        border: 1px solid rgba(0,0,0,.15);
-        border-radius: 10px;
-        outline: none;
-        transition: border-color .2s, box-shadow .2s;
-        background: #fff;
-    }
-    input:focus {
-        border-color: #4CAF50;
-        box-shadow: 0 0 0 4px rgba(76,175,80,.15);
-    }
-
-    /* Errors & messages */
-    .helptext {
-        font-size: 12px;
-        color: #666;
-        margin-top: 4px;
-    }
-    .field-errors {
-        margin-top: 6px;
-        color: #b00020;
-        font-size: 13px;
-    }
-    .non-field-errors {
-        margin: 0 24px 8px;
-        color: #b00020;
-        font-size: 13px;
-    }
-    .messages {
-        margin: 12px 24px 0;
-        list-style: none;
-    }
-    .messages li {
-        background: #eef9f0;
-        color: #205e26;
-        border: 1px solid #cfead4;
-        padding: 10px 12px;
-        border-radius: 10px;
-        font-size: 14px;
-    }
-
-    /* Actions */
-    .card-actions {
-        display: flex;
-        align-items: center;
-        justify-content: space-between;
-        gap: 12px;
-        padding: 16px 24px 24px;
-    }
-    .btn-primary {
-        appearance: none;
-        border: 0;
-        cursor: pointer;
-        font-weight: 700;
-        font-size: 15px;
-        padding: 12px 16px;
-        border-radius: 10px;
-        color: #fff;
-        background: linear-gradient(135deg, #4CAF50, #45a049);
-        box-shadow: 0 6px 14px rgba(76,175,80,.25);
-        transition: transform .15s ease, box-shadow .15s ease, filter .2s ease;
-    }
-    .btn-primary:hover {
-        transform: translateY(-1px);
-        box-shadow: 0 10px 18px rgba(76,175,80,.30);
-        filter: brightness(1.02);
-    }
-    .btn-primary:active {
-        transform: translateY(0);
-    }
-    .muted {
-        font-size: 14px;
-        color: #555;
-    }
-    .muted a {
-        color: #2d7d33;
-        font-weight: 600;
-        text-decoration: none;
-    }
-    .muted a:hover {
-        text-decoration: underline;
-    }
-
-    .navbar .user { text-decoration: underline; } /* override invalid 'underscore' */
-</style>
+    <title>Register</title>
 {% endblock meta %}
 
 {% block content %}
-<main class="page">
-    <section class="card" role="region" aria-labelledby="register-title">
-        <header class="card-header">
-            <h1 id="register-title">Create your account</h1>
-            <p class="card-sub">Join to start managing your products and tasks.</p>
-        </header>
+    <main class="px-4">
+        <section class="max-w-md mx-auto mt-16 sm:mt-20 bg-white border border-black/5 rounded-2xl shadow-xl overflow-hidden">
+            <header class="px-6 pt-6 pb-3 bg-gradient-to-br from-gray-50 to-white border-b border-black/5">
+                <h1 class="text-2xl font-bold text-gray-900">Create your account</h1>
+                <p class="text-sm text-gray-600 mt-1">Join to start managing your products and tasks.</p>
+            </header>
 
-        {% if form.non_field_errors %}
-        <div class="non-field-errors">
-            {{ form.non_field_errors }}
-        </div>
-        {% endif %}
-
-        {% if messages %}
-        <ul class="messages">
-            {% for message in messages %}
-                <li>{{ message }}</li>
-            {% endfor %}
-        </ul>
-        {% endif %}
-
-        <div class="card-body">
-        <form method="POST" novalidate>
-            {% csrf_token %}
-            <table>
-            {# Render each field for better control over labels, helptext, and errors #}
-            {% for field in form %}
-                <tr>
-                <td>
-                    <label for="{{ field.id_for_label }}">{{ field.label }}</label>
-                    {{ field }}
-                    {% if field.help_text %}
-                    <div class="helptext">{{ field.help_text|safe }}</div>
-                    {% endif %}
-                    {% if field.errors %}
-                    <div class="field-errors">{{ field.errors }}</div>
-                    {% endif %}
-                </td>
-                </tr>
-            {% endfor %}
-            </table>
-
-            <div class="card-actions">
-            <span class="muted">
-                Already have an account?
-                <a href="{% url 'main:login' %}">Sign in</a>
-            </span>
-            <button type="submit" name="submit" class="btn-primary">
-                Create account
-            </button>
+            {% if form.non_field_errors %}
+            <div class="px-6 pt-4">
+                <div class="text-sm text-red-700 bg-red-50 border border-red-200 rounded-lg px-3 py-2">
+                    {{ form.non_field_errors }}
+                </div>
             </div>
-        </form>
-        </div>
-    </section>
-</main>
+            {% endif %}
+
+            {% if messages %}
+            <ul class="px-6 pt-4 space-y-2">
+                {% for message in messages %}
+                <li class="text-sm text-emerald-800 bg-emerald-50 border border-emerald-200 rounded-lg px-3 py-2">
+                    {{ message }}
+                </li>
+                {% endfor %}
+            </ul>
+            {% endif %}
+
+            <div class="px-6 py-5">
+                <form method="POST" novalidate class="space-y-4">
+                    {% csrf_token %}
+
+                    {% for field in form %}
+                        <div>
+                            <label for="{{ field.id_for_label }}" class="block text-sm font-semibold text-gray-800 mb-1">
+                                {{ field.label }}
+                            </label>
+                            {{ field.as_widget(attrs={
+                                'class': 'w-full rounded-lg border border-gray-300 px-3 py-2 text-gray-900 placeholder-gray-400 outline-none focus:ring-4 focus:ring-emerald-300 focus:border-emerald-500'
+                            }) }}
+                            {% if field.help_text %}
+                            <p class="mt-1 text-xs text-gray-500">{{ field.help_text|safe }}</p>
+                            {% endif %}
+                            {% if field.errors %}
+                            <div class="mt-1 text-sm text-red-600">{{ field.errors }}</div>
+                            {% endif %}
+                        </div>
+                    {% endfor %}
+
+                    <div class="flex items-center justify-between pt-2">
+                        <span class="text-sm text-gray-600">
+                            Already have an account?
+                            <a href="{% url 'main:login' %}" class="font-semibold text-emerald-700 hover:underline">Sign in</a>
+                        </span>
+                        <button type="submit"
+                                class="inline-flex items-center rounded-lg bg-gradient-to-br from-green-500 to-green-600 text-white font-bold px-4 py-2.5 shadow hover:-translate-y-0.5 hover:shadow-lg transition">
+                            Create account
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </section>
+    </main>
 {% endblock content %}
