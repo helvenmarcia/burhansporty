@@ -1,4 +1,5 @@
 {% extends 'base.html' %}
+{% load static %}
 {% block meta %}
     <title>BurhanSporty</title>
 {% endblock meta %}
@@ -53,7 +54,10 @@
     <!-- products -->
     <section id="products" class="max-w-7xl mx-auto px-6 py-6">
         {% if not products %}
-            <p class="text-gray-600">No products available yet.</p>
+            <div class="py-16 flex flex-col items-center justify-center text-center">
+                <img src="{% static 'image/nothing.gif' %}" alt="No products yet" class="w-96 h-96 object-contain mb-4 opacity-90" />
+                <p class="text-gray-600 font-medium">No products available yet.</p>
+            </div>
         {% else %}
         <div class="grid gap-6 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
             {% for product in products %}

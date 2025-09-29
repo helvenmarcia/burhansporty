@@ -6,52 +6,57 @@
 
 {% block content %}
     <main class="px-4">
-        <section class="max-w-md mx-auto mt-16 sm:mt-20 bg-white border border-black/5 rounded-2xl shadow-xl overflow-hidden">
-            <header class="px-6 pt-6 pb-3 bg-gradient-to-br from-gray-50 to-white border-b border-black/5">
-                <h1 id="login-title" class="text-2xl font-bold text-gray-900">Welcome back</h1>
-                <p class="text-sm text-gray-600 mt-1">Login to continue managing your tasks and products.</p>
-            </header>
+        <div class="max-w-sm mx-auto pt-24 pb-12">
+            <h1 class="text-2xl font-bold mb-6 text-gray-900">Welcome back</h1>
 
-            {% if messages %}
-            <ul class="px-6 pt-4 space-y-2">
-                {% for message in messages %}
-                <li class="text-sm text-emerald-800 bg-emerald-50 border border-emerald-200 rounded-lg px-3 py-2">
-                    {{ message }}
-                </li>
-                {% endfor %}
-            </ul>
+            {% if form.non_field_errors %}
+            <div class="mb-4 text-sm text-red-700 bg-red-50 border border-red-200 rounded-lg px-3 py-2">
+                {{ form.non_field_errors }}
+            </div>
             {% endif %}
 
-            <div class="px-6 py-5">
-                <form method="POST" action="" class="space-y-4">
-                    {% csrf_token %}
+            <form method="POST" action="" class="space-y-4">
+                {% csrf_token %}
 
-                    {% for field in form %}
-                        <div>
-                            <label for="{{ field.id_for_label }}" class="block text-sm font-semibold text-gray-800 mb-1">
-                                {{ field.label }}
-                            </label>
-                            {{ field.as_widget(attrs={
-                                'class': 'w-full rounded-lg border border-gray-300 px-3 py-2 text-gray-900 placeholder-gray-400 outline-none focus:ring-4 focus:ring-emerald-300 focus:border-emerald-500'
-                            }) }}
-                            {% if field.errors %}
-                            <div class="mt-1 text-sm text-red-600">{{ field.errors }}</div>
-                            {% endif %}
-                        </div>
-                    {% endfor %}
+                <div>
+                    <label for="id_username" class="block text-sm font-semibold text-gray-800 mb-1">Username</label>
+                    <p class="text-xs text-gray-500 mb-1">Your account username.</p>
+                    <input
+                        type="text"
+                        name="username"
+                        id="id_username"
+                        autocomplete="username"
+                        value="{{ form.username.value|default_if_none:'' }}"
+                        class="w-full rounded-lg border border-gray-300 px-3 py-2 text-gray-900 outline-none focus:ring-4 focus:ring-emerald-300 focus:border-emerald-500"
+                    >
+                    {% if form.username.errors %}
+                    <p class="mt-1 text-sm text-red-600">{{ form.username.errors|striptags }}</p>
+                    {% endif %}
+                </div>
 
-                    <div class="flex items-center justify-between pt-2">
-                        <span class="text-sm text-gray-600">
-                            Don’t have an account?
-                            <a href="{% url 'main:register' %}" class="font-semibold text-emerald-700 hover:underline">Register now</a>
-                        </span>
-                        <button type="submit"
-                                class="inline-flex items-center rounded-lg bg-gradient-to-br from-green-500 to-green-600 text-white font-bold px-4 py-2.5 shadow hover:-translate-y-0.5 hover:shadow-lg transition">
-                            Login
-                        </button>
-                    </div>
-                </form>
-            </div>
-        </section>
+                <div>
+                    <label for="id_password" class="block text-sm font-semibold text-gray-800 mb-1">Password</label>
+                    <p class="text-xs text-gray-500 mb-1">Case-sensitive. Keep it private.</p>
+                    <input
+                        type="password"
+                        name="password"
+                        id="id_password"
+                        autocomplete="current-password"
+                        class="w-full rounded-lg border border-gray-300 px-3 py-2 text-gray-900 outline-none focus:ring-4 focus:ring-emerald-300 focus:border-emerald-500"
+                    >
+                    {% if form.password.errors %}
+                    <p class="mt-1 text-sm text-red-600">{{ form.password.errors|striptags }}</p>
+                    {% endif %}
+                </div>
+
+                <div class="flex items-center justify-between pt-2">
+                    <a href="{% url 'main:register' %}" class="text-sm font-semibold text-emerald-700 hover:underline">Create an account</a>
+                    <button type="submit"
+                            class="inline-flex items-center rounded-lg bg-gradient-to-br from-green-500 to-green-600 text-white font-bold px-4 py-2.5 shadow hover:-translate-y-0.5 hover:shadow-lg transition">
+                        Login
+                    </button>
+                </div>
+            </form>
+        </div>
     </main>
 {% endblock content %}
