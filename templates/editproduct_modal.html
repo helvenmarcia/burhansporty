@@ -1,0 +1,209 @@
+<div id="editProductModal"
+     class="hidden fixed inset-0 z-50 w-full h-full bg-gray-900/50 flex items-center justify-center"
+     role="dialog" aria-modal="true" aria-labelledby="editProductModalTitle">
+    <!-- Backdrop click to close -->
+    <button class="absolute inset-0 w-full h-full" onclick="hideEditProductModal()" aria-label="Close"></button>
+
+    <div id="editProductModalContent"
+         class="relative w-5/6 sm:w-3/5 md:w-1/2 lg:w-2/5 xl:w-1/3 max-h-[90vh] overflow-y-auto bg-white rounded-2xl shadow-2xl border border-black/5">
+        <!-- Header -->
+        <header class="px-6 pt-6 pb-3 bg-gradient-to-br from-gray-50 to-white border-b border-black/5">
+            <div class="flex items-start justify-between">
+                <div>
+                    <h3 id="editProductModalTitle" class="text-2xl font-bold text-gray-900">
+                        Edit Product
+                    </h3>
+                    <p id="editProductSubtitle" class="text-sm text-gray-600 mt-1 line-clamp-1">Loading…</p>
+                </div>
+                <button type="button"
+                        class="ml-4 text-gray-400 hover:text-gray-700 hover:bg-gray-100 rounded-lg p-2"
+                        onclick="hideEditProductModal()" aria-label="Close">
+                    <svg viewBox="0 0 24 24" class="w-5 h-5" fill="currentColor" aria-hidden="true">
+                        <path fill-rule="evenodd" clip-rule="evenodd"
+                              d="M6.225 4.811a1 1 0 0 1 1.414 0L12 9.172l4.361-4.361a1 1 0 1 1 1.415 1.414L13.414 10.586l4.362 4.361a1 1 0 0 1-1.415 1.415L12 12l-4.361 4.362a1 1 0 0 1-1.414-1.415L10.586 10.586 6.225 6.225a1 1 0 0 1 0-1.414Z"/>
+                    </svg>
+                </button>
+            </div>
+
+            {% if form and form.non_field_errors %}
+            <div class="mt-4">
+                <div class="text-sm text-red-700 bg-red-50 border border-red-200 rounded-lg px-3 py-2">
+                    {{ form.non_field_errors }}
+                </div>
+            </div>
+            {% endif %}
+
+            {% if messages %}
+            <ul class="mt-4 space-y-2">
+                {% for message in messages %}
+                <li class="text-sm text-emerald-800 bg-emerald-50 border border-emerald-200 rounded-lg px-3 py-2">
+                    {{ message }}
+                </li>
+                {% endfor %}
+            </ul>
+            {% endif %}
+        </header>
+
+        <!-- Body -->
+        <div class="px-6 py-6">
+            <form method="POST" action="" id="editProductForm" class="space-y-5">
+                {% csrf_token %}
+                <input type="hidden" name="__product_id" id="__product_id" value="">
+
+                <div>
+                    <label for="edit_id_title" class="block text-sm font-semibold text-gray-800 mb-1">Title</label>
+                    <input type="text" name="title" id="edit_id_title"
+                           value=""
+                           class="w-full rounded-lg border border-gray-300 px-3 py-2 text-gray-900 placeholder-gray-400 outline-none focus:ring-4 focus:ring-emerald-300 focus:border-emerald-500">
+                </div>
+
+                <div>
+                    <label for="edit_id_price" class="block text-sm font-semibold text-gray-800 mb-1">Price (IDR)</label>
+                    <input type="number" name="price" id="edit_id_price" min="0" step="1"
+                           value=""
+                           class="w-full rounded-lg border border-gray-300 px-3 py-2 text-gray-900 outline-none focus:ring-4 focus:ring-emerald-300 focus:border-emerald-500">
+                </div>
+
+                <div>
+                    <label for="edit_id_thumbnail" class="block text-sm font-semibold text-gray-800 mb-1">Thumbnail URL</label>
+                    <input type="url" name="thumbnail" id="edit_id_thumbnail"
+                           value=""
+                           placeholder="https://..."
+                           class="w-full rounded-lg border border-gray-300 px-3 py-2 text-gray-900 outline-none focus:ring-4 focus:ring-emerald-300 focus:border-emerald-500">
+                </div>
+
+                <div>
+                    <label for="edit_id_category" class="block text-sm font-semibold text-gray-800 mb-1">Category</label>
+                    <input type="text" name="category" id="edit_id_category"
+                           value=""
+                           placeholder="e.g., clothes, shoes, accessories"
+                           class="w-full rounded-lg border border-gray-300 px-3 py-2 bg-white text-gray-900 outline-none focus:ring-4 focus:ring-emerald-300 focus:border-emerald-500">
+                </div>
+
+                <div>
+                    <label for="edit_id_description" class="block text-sm font-semibold text-gray-800 mb-1">Description</label>
+                    <textarea name="description" id="edit_id_description" rows="4"
+                              class="w-full rounded-lg border border-gray-300 px-3 py-2 text-gray-900 placeholder-gray-400 outline-none focus:ring-4 focus:ring-emerald-300 focus:border-emerald-500"></textarea>
+                </div>
+
+                <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
+                    <div>
+                        <label for="edit_id_sold" class="block text-sm font-semibold text-gray-800 mb-1">Sold</label>
+                        <input type="number" name="sold" id="edit_id_sold" min="0" step="1"
+                               value=""
+                               class="w-full rounded-lg border border-gray-300 px-3 py-2 text-gray-900 outline-none focus:ring-4 focus:ring-emerald-300 focus:border-emerald-500">
+                    </div>
+
+                    <div>
+                        <label for="edit_id_stock" class="block text-sm font-semibold text-gray-800 mb-1">Stock</label>
+                        <input type="number" name="stock" id="edit_id_stock" min="0" step="1"
+                               value=""
+                               class="w-full rounded-lg border border-gray-300 px-3 py-2 text-gray-900 outline-none focus:ring-4 focus:ring-emerald-300 focus:border-emerald-500">
+                    </div>
+
+                    <div class="flex items-end">
+                        <label for="edit_id_is_featured" class="inline-flex items-center gap-2">
+                            <input type="checkbox" name="is_featured" id="edit_id_is_featured"
+                                   class="h-4 w-4 rounded border-gray-300 text-emerald-600 focus:ring-emerald-400">
+                            <span class="text-sm font-semibold text-gray-800">Featured</span>
+                        </label>
+                    </div>
+                </div>
+
+                <!-- Footer -->
+                <div class="flex flex-col sm:flex-row gap-3 pt-2">
+                    <button type="button"
+                            class="order-2 sm:order-1 px-4 py-2.5 border border-gray-300 text-gray-700 rounded-lg font-medium hover:bg-gray-50 transition"
+                            onclick="hideEditProductModal()">Cancel</button>
+
+                    <div class="order-1 sm:order-2 flex-1 flex items-center gap-2">
+                        <a id="editDeleteLink"
+                           href="#"
+                           onclick="return confirm('Delete this product?');"
+                           class="hidden inline-flex items-center rounded-lg bg-red-600 text-white text-sm font-bold px-3 py-2.5 shadow hover:-translate-y-0.5 hover:shadow-lg transition">
+                            Delete
+                        </a>
+                        <button type="submit"
+                                class="flex-1 inline-flex items-center justify-center rounded-lg bg-gradient-to-br from-green-500 to-green-600 text-white font-bold px-4 py-2.5 shadow hover:-translate-y-0.5 hover:shadow-lg transition">
+                            Save changes
+                        </button>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<script>
+    (function(){
+        const modal = document.getElementById('editProductModal');
+        const form  = document.getElementById('editProductForm');
+
+        async function loadProductData(productId){
+        const url = (window.SHOW_JSON_BY_ID_PATTERN || '').replace('PRODUCT_ID_PLACEHOLDER', productId);
+        const res = await fetch(url, { headers: { 'Accept': 'application/json' } });
+        if (!res.ok) throw new Error('Load failed');
+        return await res.json();
+        }
+
+        async function submitEdit(e){
+        e.preventDefault();
+
+        const action = form.getAttribute('action') || '';
+        const csrf   = form.querySelector('input[name=csrfmiddlewaretoken]')?.value || '';
+        const fd     = new FormData(form);
+
+        try {
+            const res = await fetch(action, {
+            method: 'POST',
+            headers: { 'X-Requested-With': 'XMLHttpRequest', 'X-CSRFToken': csrf },
+            body: fd,
+            });
+
+            if (!res.ok) throw new Error('Edit failed');
+
+            // success
+            if (modal) modal.classList.add('hidden');
+            if (typeof showToast === 'function') {
+            showToast('Product updated', 'Changes saved successfully.', 'success');
+            }
+            document.dispatchEvent(new CustomEvent('productUpdated'));
+        } catch (err) {
+            console.error(err);
+            if (typeof showToast === 'function') {
+            showToast('Update failed', 'Please try again.', 'error');
+            }
+        }
+        }
+
+        window.openEditProductModal = async (productId) => {
+        try {
+            const data = await loadProductData(productId);
+
+            const action = (window.EDIT_PRODUCT_URL_PATTERN || '').replace('PRODUCT_ID_PLACEHOLDER', productId);
+            form.setAttribute('action', action);
+
+            document.getElementById('edit_id_title').value       = data.title ?? '';
+            document.getElementById('edit_id_price').value       = data.price ?? '';
+            document.getElementById('edit_id_thumbnail').value   = data.thumbnail ?? '';
+            document.getElementById('edit_id_category').value    = data.category ?? '';
+            document.getElementById('edit_id_description').value = data.description ?? '';
+            document.getElementById('edit_id_sold').value        = data.sold ?? 0;
+            document.getElementById('edit_id_stock').value       = data.stock ?? 0;
+            document.getElementById('edit_id_is_featured').checked = !!data.is_featured;
+
+            if (modal) modal.classList.remove('hidden');
+        } catch (err) {
+            console.error(err);
+            if (typeof showToast === 'function') {
+            showToast('Failed to open editor', 'Please try again.', 'error');
+            }
+        }
+        };
+
+        if (form && !form._wired) {
+        form._wired = true;
+        form.addEventListener('submit', submitEdit);
+        }
+    })();
+</script>

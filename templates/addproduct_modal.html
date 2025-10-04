@@ -1,0 +1,226 @@
+<div id="productModal"
+     class="hidden fixed inset-0 z-50 w-full h-full bg-gray-900/50 flex items-center justify-center"
+     role="dialog" aria-modal="true" aria-labelledby="productModalTitle">
+  <!-- Click the backdrop to close -->
+  <button class="absolute inset-0 w-full h-full" onclick="hideProductModal()" aria-label="Close"></button>
+
+  <div id="productModalContent"
+       class="relative w-5/6 sm:w-3/5 md:w-1/2 lg:w-2/5 xl:w-1/3 max-h-[90vh] overflow-y-auto bg-white rounded-2xl shadow-2xl border border-black/5">
+    <!-- Header -->
+    <header class="px-6 pt-6 pb-3 bg-gradient-to-br from-gray-50 to-white border-b border-black/5">
+      <div class="flex items-start justify-between">
+        <div>
+          <h3 id="productModalTitle" class="text-2xl font-bold text-gray-900 text-center sm:text-left">
+            Add Product
+          </h3>
+          <p class="text-sm text-gray-600 mt-1">Create a new product to appear in your catalog</p>
+        </div>
+        <button type="button"
+                class="ml-4 text-gray-400 hover:text-gray-700 hover:bg-gray-100 rounded-lg p-2"
+                onclick="hideProductModal()" aria-label="Close">
+          <!-- x icon -->
+          <svg viewBox="0 0 24 24" class="w-5 h-5" fill="currentColor" aria-hidden="true">
+            <path fill-rule="evenodd" clip-rule="evenodd"
+                  d="M6.225 4.811a1 1 0 0 1 1.414 0L12 9.172l4.361-4.361a1 1 0 1 1 1.415 1.414L13.414 10.586l4.362 4.361a1 1 0 0 1-1.415 1.415L12 12l-4.361 4.362a1 1 0 0 1-1.414-1.415L10.586 10.586 6.225 6.225a1 1 0 0 1 0-1.414Z"/>
+          </svg>
+        </button>
+      </div>
+
+      {% if form.non_field_errors %}
+      <div class="mt-4">
+        <div class="text-sm text-red-700 bg-red-50 border border-red-200 rounded-lg px-3 py-2">
+          {{ form.non_field_errors }}
+        </div>
+      </div>
+      {% endif %}
+
+      {% if messages %}
+      <ul class="mt-4 space-y-2">
+        {% for message in messages %}
+        <li class="text-sm text-emerald-800 bg-emerald-50 border border-emerald-200 rounded-lg px-3 py-2">
+          {{ message }}
+        </li>
+        {% endfor %}
+      </ul>
+      {% endif %}
+    </header>
+
+    <!-- Body -->
+    <div class="px-6 py-6">
+      <form method="POST" action="{{ action|default:'' }}" id="productForm" class="space-y-5">
+        {% csrf_token %}
+
+        <div>
+          <label for="id_title" class="block text-sm font-semibold text-gray-800 mb-1">Title</label>
+          <input type="text" name="title" id="id_title"
+                 value="{{ form.title.value|default_if_none:'' }}"
+                 class="w-full rounded-lg border border-gray-300 px-3 py-2 text-gray-900 placeholder-gray-400 outline-none focus:ring-4 focus:ring-emerald-300 focus:border-emerald-500">
+          {% if form.title.errors %}
+          <p class="mt-1 text-sm text-red-600">{{ form.title.errors|striptags }}</p>
+          {% endif %}
+        </div>
+
+        <div>
+          <label for="id_price" class="block text-sm font-semibold text-gray-800 mb-1">Price (IDR)</label>
+          <input type="number" name="price" id="id_price" min="0" step="1"
+                 value="{{ form.price.value|default_if_none:'' }}"
+                 class="w-full rounded-lg border border-gray-300 px-3 py-2 text-gray-900 outline-none focus:ring-4 focus:ring-emerald-300 focus:border-emerald-500">
+          {% if form.price.errors %}
+          <p class="mt-1 text-sm text-red-600">{{ form.price.errors|striptags }}</p>
+          {% endif %}
+        </div>
+
+        <div>
+          <label for="id_thumbnail" class="block text-sm font-semibold text-gray-800 mb-1">Thumbnail URL</label>
+          <input type="url" name="thumbnail" id="id_thumbnail"
+                 value="{{ form.thumbnail.value|default_if_none:'' }}"
+                 class="w-full rounded-lg border border-gray-300 px-3 py-2 text-gray-900 outline-none focus:ring-4 focus:ring-emerald-300 focus:border-emerald-500"
+                 placeholder="https://...">
+          {% if form.thumbnail.errors %}
+          <p class="mt-1 text-sm text-red-600">{{ form.thumbnail.errors|striptags }}</p>
+          {% endif %}
+        </div>
+
+        <div>
+          <label for="id_category" class="block text-sm font-semibold text-gray-800 mb-1">Category</label>
+          <input type="text" name="category" id="id_category"
+                 value="{{ form.category.value|default_if_none:'' }}"
+                 placeholder="e.g., clothes, shoes, accessories"
+                 class="w-full rounded-lg border border-gray-300 px-3 py-2 bg-white text-gray-900 outline-none focus:ring-4 focus:ring-emerald-300 focus:border-emerald-500">
+          {% if form.category.errors %}
+          <p class="mt-1 text-sm text-red-600">{{ form.category.errors|striptags }}</p>
+          {% endif %}
+        </div>
+
+        <div>
+          <label for="id_description" class="block text-sm font-semibold text-gray-800 mb-1">Description</label>
+          <textarea name="description" id="id_description" rows="4"
+                    class="w-full rounded-lg border border-gray-300 px-3 py-2 text-gray-900 placeholder-gray-400 outline-none focus:ring-4 focus:ring-emerald-300 focus:border-emerald-500"
+                    placeholder="None">{{ form.description.value|default_if_none:'' }}</textarea>
+          {% if form.description.errors %}
+          <p class="mt-1 text-sm text-red-600">{{ form.description.errors|striptags }}</p>
+          {% endif %}
+        </div>
+
+        <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
+          <div>
+            <label for="id_sold" class="block text-sm font-semibold text-gray-800 mb-1">Sold</label>
+            <input type="number" name="sold" id="id_sold" min="0" step="1"
+                   value="{{ form.sold.value|default_if_none:'' }}"
+                   class="w-full rounded-lg border border-gray-300 px-3 py-2 text-gray-900 outline-none focus:ring-4 focus:ring-emerald-300 focus:border-emerald-500">
+            {% if form.sold.errors %}
+            <p class="mt-1 text-sm text-red-600">{{ form.sold.errors|striptags }}</p>
+            {% endif %}
+          </div>
+          <div>
+            <label for="id_stock" class="block text-sm font-semibold text-gray-800 mb-1">Stock</label>
+            <input type="number" name="stock" id="id_stock" min="0" step="1"
+                   value="{{ form.stock.value|default_if_none:'' }}"
+                   class="w-full rounded-lg border border-gray-300 px-3 py-2 text-gray-900 outline-none focus:ring-4 focus:ring-emerald-300 focus:border-emerald-500">
+            {% if form.stock.errors %}
+            <p class="mt-1 text-sm text-red-600">{{ form.stock.errors|striptags }}</p>
+            {% endif %}
+          </div>
+          <div class="flex items-end">
+            <label for="id_is_featured" class="inline-flex items-center gap-2">
+              <input type="checkbox" name="is_featured" id="id_is_featured"
+                     {% if form.is_featured.value %}checked{% endif %}
+                     class="h-4 w-4 rounded border-gray-300 text-emerald-600 focus:ring-emerald-400">
+              <span class="text-sm font-semibold text-gray-800">Featured</span>
+            </label>
+          </div>
+        </div>
+
+        <!-- Footer (inside the form so Enter submits) -->
+        <div class="flex flex-col sm:flex-row gap-3 pt-2">
+          <button type="button"
+                  class="order-2 sm:order-1 px-4 py-2.5 border border-gray-300 text-gray-700 rounded-lg font-medium hover:bg-gray-50 transition"
+                  onclick="hideProductModal()">Cancel</button>
+          <button type="submit"
+                  class="order-1 sm:order-2 flex-1 inline-flex items-center justify-center rounded-lg bg-gradient-to-br from-green-500 to-green-600 text-white font-bold px-4 py-2.5 shadow hover:-translate-y-0.5 hover:shadow-lg transition">
+            Save Product
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+
+<script>
+    function showProductModal() {
+        const m = document.getElementById('productModal');
+        if (m) m.classList.remove('hidden');
+        const first = document.getElementById('id_title');
+        if (first) setTimeout(() => first.focus(), 50);
+    }
+    function hideProductModal() {
+        const m = document.getElementById('productModal');
+        if (m) m.classList.add('hidden');
+    }
+    document.addEventListener('keydown', (e) => {
+        if (e.key === 'Escape') hideProductModal();
+    });
+    (function wireAddProductModal() {
+        const modal = document.getElementById('productModal');
+        const form = document.getElementById('productForm');
+
+        if (!form || form._wired) return;
+        form._wired = true;
+
+        function getCookie(name) {
+            const v = document.cookie.split(';').map(c => c.trim());
+            for (const c of v) {
+                if (c.startsWith(name + '=')) {
+                    return decodeURIComponent(c.split('=').slice(1).join('='));
+                }
+            }
+            return '';
+        }
+
+        async function submitAdd(e) {
+            e.preventDefault();
+
+            const action = form.getAttribute('action') || (window.ADD_PRODUCT_URL || '');
+            if (!action) {
+                console.error('Missing add-product action URL');
+                if (typeof showToast === 'function') {
+                    showToast('Add failed', 'No action URL configured.', 'error');
+                }
+                return;
+            }
+
+            const csrfCookie = getCookie('csrftoken');
+            const fd = new FormData(form);
+
+            try {
+                const res = await fetch(action, {
+                    method: 'POST',
+                    headers: {
+                        'X-Requested-With': 'XMLHttpRequest',
+                        'X-CSRFToken': csrfCookie,
+                    },
+                    body: fd,
+                    credentials: 'same-origin',
+                });
+
+                if (!res.ok) throw new Error('Add failed');
+
+                if (typeof hideProductModal === 'function') hideProductModal();
+                form.reset();
+
+                if (typeof showToast === 'function') {
+                    showToast('Product added', 'Your product has been created.', 'success');
+                }
+
+                document.dispatchEvent(new CustomEvent('productAdded'));
+            } catch (err) {
+                console.error(err);
+                if (typeof showToast === 'function') {
+                    showToast('Add failed', 'Please check your inputs and try again.', 'error');
+                }
+            }
+        }
+
+        form.addEventListener('submit', submitAdd);
+    })();
+</script>

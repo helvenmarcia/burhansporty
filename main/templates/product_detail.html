@@ -1,7 +1,7 @@
 {% extends 'base.html' %}
 
 {% block meta %}
-    <title>{{ product.title }} · Detail</title>
+    <title>Product Detail</title>
 {% endblock meta %}
 
 {% block content %}
@@ -14,72 +14,68 @@
                 </a>
             </div>
 
-            <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 bg-white rounded-2xl shadow-xl overflow-hidden border border-black/5">
+            <!-- Loading -->
+            <div id="loading" class="py-12 flex items-center justify-center">
+                <svg class="animate-spin h-8 w-8 text-emerald-600" viewBox="0 0 24 24" fill="none">
+                    <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                    <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v4a4 4 0 00-4 4H4z"></path>
+                </svg>
+            </div>
+
+            <!-- Error -->
+            <div id="error" class="hidden py-12">
+                <div class="rounded-xl border border-red-200 bg-red-50 text-red-800 px-4 py-3">
+                    Failed to load product. It may have been removed.
+                </div>
+            </div>
+
+            <!-- Content -->
+            <div id="content" class="hidden grid grid-cols-1 lg:grid-cols-2 gap-6 bg-white rounded-2xl shadow-xl overflow-hidden border border-black/5">
                 <div class="bg-gray-100 min-h-[280px] lg:min-h-[380px]">
-                    {% if product.thumbnail %}
-                        <img src="{{ product.thumbnail }}" alt="{{ product.title }} thumbnail" class="w-full h-full max-h-[620px] object-cover">
-                    {% else %}
-                        <img src="https://via.placeholder.com/800x600?text=No+Image" alt="No image" class="w-full h-full object-cover">
-                    {% endif %}
+                    <img id="product-image" src="https://via.placeholder.com/800x600?text=Loading..." alt="Product thumbnail"
+                         class="w-full h-full max-h-[620px] object-cover">
                 </div>
 
                 <div class="p-6 flex flex-col gap-4">
-                    <h1 class="text-2xl sm:text-3xl font-extrabold text-gray-900">{{ product.title }}</h1>
+                    <h1 id="product-title" class="text-2xl sm:text-3xl font-extrabold text-gray-900">Loading…</h1>
 
-                    <div class="flex flex-wrap gap-2 text-xs">
-                        <span class="inline-flex items-center rounded-full bg-indigo-50 text-indigo-800 px-3 py-1 font-semibold">
-                            Seller: {{ product.user.username|default:"Unknown" }}
-                        </span>
-                        {% if product.category %}
-                        <span class="inline-flex items-center rounded-full bg-gray-100 text-gray-800 px-3 py-1 font-semibold">
-                            {{ product.get_category_display|default:product.category }}
-                        </span>
-                        {% endif %}
-                        {% if product.is_featured %}
-                        <span class="inline-flex items-center rounded-full bg-amber-100 text-amber-800 px-3 py-1 font-semibold">
+                    <div id="pills" class="flex flex-wrap gap-2 text-xs">
+                        <!-- Seller -->
+                        <span id="pill-seller" class="hidden inline-flex items-center rounded-full bg-indigo-50 text-indigo-800 px-3 py-1 font-semibold"></span>
+                        <!-- Category -->
+                        <span id="pill-category" class="hidden inline-flex items-center rounded-full bg-gray-100 text-gray-800 px-3 py-1 font-semibold"></span>
+                        <!-- Featured -->
+                        <span id="pill-featured" class="hidden inline-flex items-center rounded-full bg-amber-100 text-amber-800 px-3 py-1 font-semibold">
                             ★ Featured
                         </span>
-                        {% endif %}
-                        <span class="inline-flex items-center rounded-full bg-emerald-100 text-emerald-800 px-3 py-1 font-semibold">
-                            Stock: {{ product.stock }}
-                        </span>
-                        <span class="inline-flex items-center rounded-full bg-rose-100 text-rose-800 px-3 py-1 font-semibold">
-                            Sold: {{ product.sold }}
-                        </span>
-                        {% if product.created_at %}
-                        <span class="inline-flex items-center rounded-full bg-gray-100 text-gray-700 px-3 py-1 font-semibold">
-                            Added: {{ product.created_at|date:"d M Y, H:i" }}
-                        </span>
-                        {% endif %}
+                        <!-- Stock -->
+                        <span id="pill-stock" class="hidden inline-flex items-center rounded-full bg-emerald-100 text-emerald-800 px-3 py-1 font-semibold"></span>
+                        <!-- Sold -->
+                        <span id="pill-sold" class="hidden inline-flex items-center rounded-full bg-rose-100 text-rose-800 px-3 py-1 font-semibold"></span>
+                        <!-- Added -->
+                        <span id="pill-added" class="hidden inline-flex items-center rounded-full bg-gray-100 text-gray-700 px-3 py-1 font-semibold"></span>
                     </div>
 
-                    <div class="text-2xl font-extrabold text-emerald-600">
-                        {% if product.price %}Rp {{ product.price|floatformat:0 }}{% else %}Price on request{% endif %}
-                    </div>
+                    <div id="product-price" class="text-2xl font-extrabold text-emerald-600">Rp 0</div>
 
-                    {% if product.description %}
-                    <div class="leading-relaxed text-gray-700 whitespace-pre-line">
-                        {{ product.description }}
-                    </div>
-                    {% endif %}
+                    <div id="product-description" class="leading-relaxed text-gray-700 whitespace-pre-line"></div>
 
                     <div class="mt-auto flex flex-wrap items-center gap-3">
-                        {% if user.is_authenticated and product.user == user %}
-                            <a href="{% url 'main:edit_product' product.id %}"
-                               class="inline-flex items-center rounded-lg bg-blue-600 text-white font-semibold px-4 py-2.5 shadow hover:-translate-y-0.5 hover:shadow-lg transition">
-                                Edit Item
-                            </a>
-                            <a href="{% url 'main:delete_product' product.id %}"
-                               onclick="return confirm('Delete this product?');"
-                               class="inline-flex items-center rounded-lg bg-red-600 text-white font-semibold px-4 py-2.5 shadow hover:-translate-y-0.5 hover:shadow-lg transition">
+                        <a id="btn-edit"
+                           href="#"
+                           class="hidden inline-flex items-center rounded-lg bg-blue-600 text-white font-semibold px-4 py-2.5 shadow hover:-translate-y-0.5 hover:shadow-lg transition">
+                            Edit Item
+                        </a>
+                        <a id="btn-delete"
+                            href="#"
+                            class="hidden inline-flex items-center rounded-lg bg-red-600 text-white font-semibold px-4 py-2.5 shadow hover:-translate-y-0.5 hover:shadow-lg transition">
                                 Delete
-                            </a>
-                        {% else %}
-                            <button type="button"
-                                    class="inline-flex items-center rounded-lg bg-gradient-to-br from-rose-500 to-red-600 text-white font-semibold px-4 py-2.5 shadow hover:-translate-y-0.5 hover:shadow-lg transition">
-                                Buy Now
-                            </button>
-                        {% endif %}
+                        </a>
+                        <button id="btn-buy"
+                                type="button"
+                                class="inline-flex items-center rounded-lg bg-gradient-to-br from-rose-500 to-red-600 text-white font-semibold px-4 py-2.5 shadow hover:-translate-y-0.5 hover:shadow-lg transition">
+                            Buy Now
+                        </button>
                         <a href="{% url 'main:show_main' %}"
                            class="inline-flex items-center rounded-lg border border-gray-300 bg-white text-gray-800 font-semibold px-4 py-2.5 hover:bg-gray-50 hover:shadow transition">
                             Back
@@ -88,5 +84,200 @@
                 </div>
             </div>
         </div>
+
+        {% include 'deleteconfirm_modal.html' %}
     </main>
+
+    <script>
+        window.DELETE_PRODUCT_URL_PATTERN = "{% url 'main:delete_product' 'PRODUCT_ID_PLACEHOLDER' %}";
+        window.POST_DELETE_REDIRECT = "{% url 'main:show_main' %}";
+
+        // ====== Config ======
+        const CURRENT_USERNAME = "{{ user.username|default_if_none:'' }}";
+
+        function getProductIdFromUrl() {
+            const parts = window.location.pathname.split('/').filter(Boolean);
+            return parts[parts.length - 1] || '';
+        }
+
+        function endpointFor(productId) {
+            return "{% url 'main:show_json_by_id' 'PRODUCT_ID_PLACEHOLDER' %}".replace('PRODUCT_ID_PLACEHOLDER', productId);
+        }
+
+        // ====== Utils ======
+        function s(text) {
+            const div = document.createElement('div');
+            div.textContent = text ?? '';
+            return div.innerHTML;
+        }
+
+        function formatRupiah(n) {
+            const num = Number(n) || 0;
+            return 'Rp ' + num.toLocaleString('id-ID', { maximumFractionDigits: 0 });
+        }
+
+        function show(el, cond) {
+            if (!el) return;
+            if (cond) el.classList.remove('hidden');
+            else el.classList.add('hidden');
+        }
+
+        // ====== DOM ======
+        const loadingEl = document.getElementById('loading');
+        const errorEl = document.getElementById('error');
+        const contentEl = document.getElementById('content');
+
+        const imgEl = document.getElementById('product-image');
+        const titleEl = document.getElementById('product-title');
+        const priceEl = document.getElementById('product-price');
+        const descEl = document.getElementById('product-description');
+
+        const pillSeller = document.getElementById('pill-seller');
+        const pillCategory = document.getElementById('pill-category');
+        const pillFeatured = document.getElementById('pill-featured');
+        const pillStock = document.getElementById('pill-stock');
+        const pillSold = document.getElementById('pill-sold');
+        const pillAdded = document.getElementById('pill-added');
+
+        const btnEdit = document.getElementById('btn-edit');
+        const btnDelete = document.getElementById('btn-delete');
+        const btnBuy = document.getElementById('btn-buy');
+
+        // ====== Render ======
+        function renderProduct(p) {
+            // Title + <title>
+            titleEl.innerHTML = s(p.title || 'Untitled Product');
+            document.title = (p.title ? s(p.title) + ' · Detail' : 'Product Detail');
+
+            // Image
+            if (p.thumbnail) {
+                imgEl.src = p.thumbnail;
+                imgEl.alt = s(p.title || 'Product') + ' thumbnail';
+            } else {
+                imgEl.src = 'https://via.placeholder.com/800x600?text=No+Image';
+                imgEl.alt = 'No image';
+            }
+
+            // Pills
+            if (p.seller) {
+                pillSeller.textContent = `Seller: ${p.seller}`;
+                show(pillSeller, true);
+            } else {
+                show(pillSeller, false);
+            }
+
+            if (p.category) {
+                pillCategory.textContent = p.category;
+                show(pillCategory, true);
+            } else {
+                show(pillCategory, false);
+            }
+
+            show(pillFeatured, !!p.is_featured);
+
+            if (typeof p.stock !== 'undefined' && p.stock !== null) {
+                pillStock.textContent = `Stock: ${p.stock}`;
+                show(pillStock, true);
+            } else {
+                show(pillStock, false);
+            }
+
+            if (typeof p.sold !== 'undefined' && p.sold !== null) {
+                pillSold.textContent = `Sold: ${p.sold}`;
+                show(pillSold, true);
+            } else {
+                show(pillSold, false);
+            }
+
+            if (p.created_at) {
+                try {
+                    const d = new Date(p.created_at);
+                    const formatted = d.toLocaleString('en-GB', {
+                        day: '2-digit', month: 'short', year: 'numeric',
+                        hour: '2-digit', minute: '2-digit'
+                    });
+                    pillAdded.textContent = `Added: ${formatted}`;
+                    show(pillAdded, true);
+                } catch {
+                    show(pillAdded, false);
+                }
+            } else {
+                show(pillAdded, false);
+            }
+
+            // Price
+            priceEl.textContent = (p.price || p.price === 0) ? formatRupiah(p.price) : 'Price on request';
+
+            // Description
+            descEl.innerHTML = s(p.description || '');
+
+            // Owner actions (use seller username to decide)
+            const isOwner = !!(CURRENT_USERNAME && p.seller && CURRENT_USERNAME === p.seller);
+
+            if (isOwner) {
+                // Wire edit/delete urls now that we know the id
+                const editUrl = "{% url 'main:edit_product' '00000000-0000-0000-0000-000000000000' %}".replace('00000000-0000-0000-0000-000000000000', p.id);
+                const deleteUrl = window.DELETE_PRODUCT_URL_PATTERN.replace('PRODUCT_ID_PLACEHOLDER', p.id);
+
+                btnEdit.href = editUrl;
+
+                btnDelete.dataset.deleteUrl = deleteUrl;
+                btnDelete.dataset.productTitle = p.title || 'Untitled';
+
+                show(btnEdit, true);
+                show(btnDelete, true);
+                show(btnBuy, false);
+            } else {
+                show(btnEdit, false);
+                show(btnDelete, false);
+                show(btnBuy, true);
+            }
+        }
+
+        // ====== Fetch ======
+        async function loadProduct() {
+            const productId = getProductIdFromUrl();
+            if (!productId) {
+                show(loadingEl, false);
+                show(errorEl, true);
+                return;
+            }
+
+            try {
+                show(loadingEl, true);
+                show(errorEl, false);
+                show(contentEl, false);
+
+                const res = await fetch(endpointFor(productId), { headers: { 'Accept': 'application/json' } });
+                if (!res.ok) throw new Error('Not found');
+                const data = await res.json();
+
+                renderProduct(data);
+
+                show(loadingEl, false);
+                show(contentEl, true);
+            } catch (err) {
+                console.error(err);
+                show(loadingEl, false);
+                show(errorEl, true);
+            }
+        }
+
+        // ====== Init ======
+        loadProduct();
+
+        (function wireDeleteButtonOnce() {
+            const del = document.getElementById('btn-delete');
+            if (!del || del._wired) return;
+            del._wired = true;
+            del.addEventListener('click', (e) => {
+                e.preventDefault();
+                const url = del.dataset.deleteUrl;
+                const title = del.dataset.productTitle || 'Untitled';
+                if (typeof showDeleteConfirmModal === 'function') {
+                    showDeleteConfirmModal(title, url);
+                }
+            });
+        })();
+    </script>
 {% endblock content %}

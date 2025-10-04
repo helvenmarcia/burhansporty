@@ -1,0 +1,110 @@
+<!-- NAVBAR -->
+<nav class="fixed inset-x-0 top-0 z-50 h-[70px] bg-white/80 backdrop-blur-md shadow">
+    <div class="mx-auto max-w-7xl h-full px-4 sm:px-6 lg:px-8">
+        <div class="h-full flex items-center justify-between">
+            <!-- left -->
+            <a href="{% url 'main:show_main' %}" class="flex items-center gap-2">
+                <img src="https://i.imgur.com/wIo9Kxl.png" alt="BP" class="h-9 w-9 object-contain">
+                <span class="text-xl font-bold">{{ app }}</span>
+            </a>
+
+            <!-- middle desktop -->
+            <div class="hidden md:flex items-center gap-2">
+                <a href="{% url 'main:show_main' %}#home" class="px-3 py-2 rounded-md font-semibold text-gray-700 hover:text-gray-900 hover:bg-gray-100">Home</a>
+                <a href="{% url 'main:show_main' %}#products" class="px-3 py-2 rounded-md font-semibold text-gray-700 hover:text-gray-900 hover:bg-gray-100">Products</a>
+                <a href="{% url 'main:show_main' %}#about" class="px-3 py-2 rounded-md font-semibold text-gray-700 hover:text-gray-900 hover:bg-gray-100">About me</a>
+                {% if user.is_authenticated %}
+                <a href="{% url 'main:add_product' %}"
+                class="ml-2 inline-flex items-center rounded-md bg-gradient-to-br from-green-500 to-green-600 text-white font-semibold shadow px-3 py-2 hover:shadow-md hover:-translate-y-0.5 transition">
+                    Add product
+                </a>
+                {% endif %}
+            </div>
+
+            <!-- right -->
+            <div class="flex items-center gap-2">
+                {% if user.is_authenticated %}
+                <div class="relative" id="userbox">
+                    <button id="userTrigger"
+                            class="inline-flex items-center gap-2 rounded-full border border-black/10 bg-white/90 shadow px-2.5 py-1.5 hover:-translate-y-0.5 hover:shadow-lg transition outline-none focus:ring-2 focus:ring-green-400/40"
+                            aria-haspopup="true" aria-expanded="false">
+                        <img class="w-8 h-8 rounded-full object-cover ring-1 ring-black/10"
+                                src="https://media.tenor.com/f7IxT80hTDoAAAAM/hmm-cat.gif" alt="User avatar">
+                        <span class="hidden sm:flex flex-col leading-tight text-left">
+                            <span class="text-[13px] font-bold text-gray-900">{{ name|default:user.username }}</span>
+                            <span class="text-[11px] text-gray-600">{{ npm|default:"-" }}</span>
+                        </span>
+                        <svg class="w-3 h-3 text-gray-700" viewBox="0 0 10 6" fill="none" aria-hidden="true">
+                            <path d="M1 1.25L5 4.75L9 1.25" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
+                        </svg>
+                    </button>
+                    <div id="userPanel"
+                            class="hidden absolute right-0 mt-2 w-72 bg-white rounded-xl shadow-2xl ring-1 ring-black/5 overflow-hidden"
+                            role="menu" aria-label="User menu">
+                        <div class="flex gap-3 p-3 bg-gradient-to-br from-green-50 to-white border-b border-black/5">
+                            <img class="w-11 h-11 rounded-full object-cover ring-1 ring-black/10"
+                                    src="https://media.tenor.com/f7IxT80hTDoAAAAM/hmm-cat.gif" alt="User avatar">
+                            <div class="flex flex-col">
+                                <span class="font-extrabold text-sm text-gray-900">{{ name|default:user.username }}</span>
+                                <span class="text-xs text-gray-600">Signed in</span>
+                            </div>
+                        </div>
+                        <div class="p-3 grid gap-2 text-sm">
+                            <div class="flex justify-between gap-4"><span class="text-gray-600">Username</span><span class="font-semibold text-gray-900">{{ user.username }}</span></div>
+                            <div class="flex justify-between gap-4"><span class="text-gray-600">NPM</span><span class="font-semibold text-gray-900">{{ npm|default:"-" }}</span></div>
+                            <div class="flex justify-between gap-4"><span class="text-gray-600">Class</span><span class="font-semibold text-gray-900">{{ class|default:"-" }}</span></div>
+                            <div class="flex justify-between gap-4"><span class="text-gray-600">Last login</span><span class="font-semibold text-gray-900">{{ last_login|default:"-" }}</span></div>
+                        </div>
+                        <div class="grid grid-cols-2 gap-2 p-3 border-t border-black/5">
+                            <a href="https://www.instagram.com/hlvnnn/" target="_blank" rel="noopener noreferrer"
+                                class="rounded-lg border border-black/10 text-center font-semibold py-2 hover:-translate-y-0.5 hover:shadow-md transition">Instagram</a>
+                            <a href="{% url 'main:add_product' %}"
+                                class="rounded-lg border border-black/10 text-center font-semibold py-2 hover:-translate-y-0.5 hover:shadow-md transition">Add Product</a>
+                            <a href="{% url 'main:show_main' %}?filter=my"
+                                class="rounded-lg border border-black/10 text-center font-semibold py-2 hover:-translate-y-0.5 hover:shadow-md transition">My Dashboard</a>
+                            <a href="{% url 'main:logout' %}"
+                                class="rounded-lg bg-gradient-to-br from-red-500 to-rose-500 text-white font-bold text-center py-2 shadow hover:shadow-lg transition">Logout</a>
+                        </div>
+                    </div>
+                </div>
+                {% endif %}
+
+                <!-- hamburger -->
+                <button id="navToggle" class="md:hidden inline-flex items-center justify-center rounded-md p-2 hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-green-400/40" aria-label="Open menu">
+                    <svg class="h-6 w-6" viewBox="0 0 24 24" fill="none">
+                        <path d="M4 7h16M4 12h16M4 17h16" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+                    </svg>
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- mobile menu -->
+    <div id="mobileMenu" class="md:hidden hidden border-t border-gray-200 bg-white">
+        <div class="px-4 py-3 space-y-1">
+            <a href="{% url 'main:show_main' %}#home" class="block px-3 py-2 rounded-md font-semibold text-gray-700 hover:bg-gray-100">Home</a>
+            <a href="{% url 'main:show_main' %}#products" class="block px-3 py-2 rounded-md font-semibold text-gray-700 hover:bg-gray-100">Products</a>
+            <a href="{% url 'main:show_main' %}#about" class="block px-3 py-2 rounded-md font-semibold text-gray-700 hover:bg-gray-100">About me</a>
+            {% if user.is_authenticated %}
+            <a href="{% url 'main:add_product' %}" class="block px-3 py-2 rounded-md font-semibold text-white bg-gradient-to-br from-green-500 to-green-600 shadow hover:shadow-md">Add product</a>
+            {% endif %}
+        </div>
+    </div>
+</nav>
+
+<script>
+    (function(){
+        const t = document.getElementById('navToggle');
+        const m = document.getElementById('mobileMenu');
+        if (t && m) t.addEventListener('click', () => m.classList.toggle('hidden'));
+        const box = document.getElementById('userbox');
+        const trigger = document.getElementById('userTrigger');
+        const panel = document.getElementById('userPanel');
+        if (!box || !trigger || !panel) return;
+        function closeAll(){ panel.classList.add('hidden'); trigger.setAttribute('aria-expanded','false'); }
+        function openPanel(){ panel.classList.remove('hidden'); trigger.setAttribute('aria-expanded','true'); }
+        trigger.addEventListener('click', e => { e.stopPropagation(); panel.classList.contains('hidden') ? openPanel() : closeAll(); });
+        document.addEventListener('click', e => { if (!box.contains(e.target)) closeAll(); });
+        document.addEventListener('keydown', e => { if (e.key === 'Escape') closeAll(); });
+    })();
+</script>

@@ -1,137 +1,484 @@
 {% extends 'base.html' %}
 {% load static %}
+
 {% block meta %}
     <title>BurhanSporty</title>
 {% endblock meta %}
 
 {% block content %}
-    <!-- hero -->
-    {% if products %}
-    <section id="home" class="h-[calc(100vh-70px)]">
-        <div id="hero" class="h-full flex snap-x snap-mandatory overflow-x-hidden scroll-smooth">
-            {% for product in products %}
-                {% if product.is_featured %}
-                <div class="relative snap-start shrink-0 w-full h-full">
-                    <img src="{{ product.thumbnail }}" alt="{{ product.title }}" class="w-full h-full object-cover brightness-75">
-                    <div class="absolute bottom-12 left-12 text-white space-y-3">
-                        <h2 class="text-3xl sm:text-4xl font-bold">{{ product.title }}</h2>
-                        <a href="{% url 'main:show_product_detail' product.id %}"
-                           class="inline-flex items-center rounded-lg bg-gradient-to-br from-green-500 to-green-600 text-white font-semibold shadow px-5 py-3 hover:-translate-y-0.5 hover:shadow-lg transition">
-                            View Product
-                        </a>
-                    </div>
-                </div>
-                {% endif %}
-            {% endfor %}
+    <!-- HERO -->
+    <section id="home" class="relative h-[calc(100vh-70px)] overflow-hidden hidden">
+        <div id="hero"
+             class="h-full flex transition-transform duration-700 ease-in-out will-change-transform">
         </div>
-    </section>
-    {% endif %}
 
-    <!-- filters -->
+        <!-- Controls  -->
+        <button id="prevSlide"
+                type="button"
+                class="hidden sm:flex absolute left-6 top-1/2 -translate-y-1/2 bg-black/40 text-white rounded-full p-2 hover:bg-black/60 transition"
+                aria-label="Previous slide">
+            ‹
+        </button>
+        <button id="nextSlide"
+                type="button"
+                class="hidden sm:flex absolute right-6 top-1/2 -translate-y-1/2 bg-black/40 text-white rounded-full p-2 hover:bg-black/60 transition"
+                aria-label="Next slide">
+            ›
+        </button>
+    </section>
+
+    <!-- Filters -->
     <div class="max-w-7xl mx-auto px-6 mt-8 flex items-center gap-3" role="tablist" aria-label="Product filter">
-        <a href="?filter=all"
-           class="inline-flex items-center justify-center rounded-full px-4 py-2 font-semibold border border-black/10 shadow text-gray-800 bg-white hover:-translate-y-0.5 hover:shadow-md transition {% if current_filter != 'my' %}!bg-gradient-to-br from-green-500 to-green-600 text-white border-transparent{% endif %}"
-           role="tab"
-           aria-selected="{% if current_filter != 'my' %}true{% else %}false{% endif %}">
+        <button id="filter-all"
+                class="inline-flex items-center justify-center rounded-full px-4 py-2 font-semibold border border-black/10 shadow text-gray-800 bg-white hover:-translate-y-0.5 hover:shadow-md transition"
+                role="tab" aria-selected="true">
             All Products
-        </a>
-        <a href="?filter=my"
-           class="inline-flex items-center justify-center rounded-full px-4 py-2 font-semibold border border-black/10 shadow text-gray-800 bg-white hover:-translate-y-0.5 hover:shadow-md transition {% if current_filter == 'my' %}!bg-gradient-to-br from-green-500 to-green-600 text-white border-transparent{% endif %}"
-           role="tab"
-           aria-selected="{% if current_filter == 'my' %}true{% else %}false{% endif %}">
+        </button>
+        <button id="filter-my"
+                class="inline-flex items-center justify-center rounded-full px-4 py-2 font-semibold border border-black/10 shadow text-gray-800 bg-white hover:-translate-y-0.5 hover:shadow-md transition"
+                role="tab" aria-selected="false">
             My Products
-        </a>
+        </button>
+        <button id="refresh-btn"
+                class="inline-flex items-center justify-center rounded-full px-3 py-2 font-semibold border border-black/10 shadow text-gray-700 bg-white hover:-translate-y-0.5 hover:shadow-md transition"
+                aria-label="Refresh products"
+                title="Refresh products">
+            <svg id="refresh-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"
+                class="w-5 h-5">
+                <path fill="currentColor"
+                    d="M17.65 6.35A7.95 7.95 0 0 0 12 4a8 8 0 1 0 8 8h-2a6 6 0 1 1-6-6c1.66 0 3.14.68 4.22 1.78L13 11h7V4z"/>
+            </svg>
+        </button>
     </div>
 
-    {% if current_filter == 'my' and not user.is_authenticated %}
-    <div class="max-w-7xl mx-auto px-6 mt-3">
+    <!-- requires login for "My Products" -->
+    <div id="login-hint" class="max-w-7xl mx-auto px-6 mt-3 hidden">
         <div class="rounded-xl border border-emerald-200 bg-emerald-50 text-emerald-800 text-sm px-4 py-3">
             Please log in to see your products.
         </div>
     </div>
-    {% endif %}
 
-    <!-- products -->
+    <!-- PRODUCTS -->
     <section id="products" class="max-w-7xl mx-auto px-6 py-6">
-        {% if not products %}
-            <div class="py-16 flex flex-col items-center justify-center text-center">
-                <img src="{% static 'image/nothing.gif' %}" alt="No products yet" class="w-96 h-96 object-contain mb-4 opacity-90" />
-                <p class="text-gray-600 font-medium">No products available yet.</p>
-            </div>
-        {% else %}
-        <div class="grid gap-6 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
-            {% for product in products %}
-            <div class="group bg-white rounded-xl shadow hover:shadow-xl transition overflow-hidden flex flex-col">
-                <a href="{% url 'main:show_product_detail' product.id %}" class="block overflow-hidden">
-                    <img src="{{ product.thumbnail }}" alt="{{ product.title }}" class="w-full h-60 object-cover transition duration-500 group-hover:scale-105">
-                </a>
-                <div class="p-4 flex flex-col gap-2">
-                    <h3 class="text-lg font-semibold text-gray-900">{{ product.title }}</h3>
-                    <div class="text-xs text-gray-600">Seller: {{ product.user.username|default:"Unknown" }}</div>
-                    <p class="text-sm text-gray-600">{{ product.description|truncatewords:15 }}</p>
-                    <div class="mt-1 font-bold text-emerald-600">Rp {{ product.price|floatformat:0 }}</div>
-
-                    <div class="mt-3 flex flex-wrap gap-2">
-                        <a href="{% url 'main:show_product_detail' product.id %}"
-                           class="inline-flex items-center rounded-md bg-gray-900 text-white text-sm font-semibold px-3 py-2 hover:-translate-y-0.5 hover:shadow transition">
-                            Details
-                        </a>
-
-                        {% if user.is_authenticated and product.user == user %}
-                            <a href="{% url 'main:edit_product' product.id %}"
-                               class="inline-flex items-center rounded-md bg-blue-600 text-white text-sm font-semibold px-3 py-2 hover:-translate-y-0.5 hover:shadow transition">
-                                Edit
-                            </a>
-                            <a href="{% url 'main:delete_product' product.id %}"
-                               onclick="return confirm('Delete this product?');"
-                               class="inline-flex items-center rounded-md bg-red-600 text-white text-sm font-semibold px-3 py-2 hover:-translate-y-0.5 hover:shadow transition">
-                                Delete
-                            </a>
-                        {% else %}
-                            <button type="button"
-                                    class="inline-flex items-center rounded-md bg-gradient-to-br from-rose-500 to-red-600 text-white text-sm font-semibold px-3 py-2 hover:-translate-y-0.5 hover:shadow transition">
-                                Buy Now
-                            </button>
-                        {% endif %}
-                    </div>
-                </div>
-            </div>
-            {% endfor %}
+        <!-- Loading -->
+        <div id="loading" class="py-16 flex flex-col items-center justify-center text-center">
+            <svg class="animate-spin h-8 w-8 text-emerald-600 mb-3" viewBox="0 0 24 24" fill="none">
+                <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                <path class="opacity-75" fill="currentColor"
+                      d="M4 12a8 8 0 018-8v4a4 4 0 00-4 4H4z"></path>
+            </svg>
+            <p class="text-gray-600">Loading products…</p>
         </div>
-        {% endif %}
+
+        <!-- Error -->
+        <div id="error" class="hidden py-16 text-center">
+            <p class="text-red-600 font-medium">Failed to load products. Please try again.</p>
+        </div>
+
+        <!-- Empty -->
+        <div id="empty" class="hidden py-16 flex flex-col items-center justify-center text-center">
+            <img src="{% static 'image/nothing.gif' %}" alt="No products yet"
+                 class="w-96 h-96 object-contain mb-4 opacity-90" />
+            <p class="text-gray-600 font-medium">No products available yet.</p>
+        </div>
+
+        <!-- Grid -->
+        <div id="grid" class="hidden"></div>
+
+        {% url 'main:add_product' as add_product_url %}
+        {% include 'addproduct_modal.html' with action=add_product_url %}
+        {% include 'editproduct_modal.html' %}
+        {% include 'deleteconfirm_modal.html' %}
+        {% include 'toast.html' %}
     </section>
 
     <script>
-        (function () {
-            const hero = document.getElementById('hero');
-            if (!hero) return;
-            const slides = Array.from(hero.children);
-            if (slides.length <= 1) return;
+        window.ADD_PRODUCT_URL            = "{% url 'main:add_product' %}"; 
+        window.EDIT_PRODUCT_URL_PATTERN   = "{% url 'main:edit_product' 'PRODUCT_ID_PLACEHOLDER' %}";
+        window.DELETE_PRODUCT_URL_PATTERN = "{% url 'main:delete_product' 'PRODUCT_ID_PLACEHOLDER' %}";
+        window.SHOW_JSON_BY_ID_PATTERN    = "{% url 'main:show_json_by_id' 'PRODUCT_ID_PLACEHOLDER' %}";
 
-            let index = 0, timer = null, intervalMs = 2500;
-            function goTo(i){
-                index = (i + slides.length) % slides.length;
-                hero.scrollTo({ left: hero.clientWidth * index, behavior: 'smooth' });
+        /* ====================== Configuration ====================== */
+        const PRODUCT_API_ENDPOINT = "{% url 'main:show_json' %}";
+        const CURRENT_USERNAME = "{{ user.username|default_if_none:'' }}";
+        const IS_AUTHENTICATED = {{ user.is_authenticated|yesno:"true,false" }};
+
+        /* ====================== DOM Handles ====================== */
+        const heroSection = document.getElementById('home');
+        const hero = document.getElementById('hero');
+        const prevBtn = document.getElementById('prevSlide');
+        const nextBtn = document.getElementById('nextSlide');
+
+        const loginHint = document.getElementById('login-hint');
+
+        const loadingSpinner = document.getElementById('loading');
+        const errorMessage = document.getElementById('error');
+        const emptyStateDisplay = document.getElementById('empty');
+        const productGridContainer = document.getElementById('grid');
+
+        const showAllProductButton = document.getElementById('filter-all');
+        const showMyProductButton = document.getElementById('filter-my');
+
+        /* ====================== State ====================== */
+        let activeFilter = 'all';
+        let allProductData = [];
+
+        // slider state
+        let currentSlide = 0;
+        let autoSlideTimer = null;
+
+        /* ====================== Helpers ====================== */
+        function s(text) {
+            if (window.DOMPurify) return DOMPurify.sanitize(String(text ?? ''));
+            const div = document.createElement('div');
+            div.textContent = text ?? '';
+            return div.innerHTML;
+        }
+
+        function formatRupiah(number) {
+            try {
+                const n = Number(number) || 0;
+                return 'Rp ' + n.toLocaleString('id-ID', { maximumFractionDigits: 0 });
+            } catch {
+                return 'Rp ' + number;
             }
-            function start(){ stop(); timer = setInterval(() => goTo(index + 1), intervalMs); }
-            function stop(){ if (timer) clearInterval(timer); timer = null; }
+        }
 
-            hero.addEventListener('mouseenter', stop);
-            hero.addEventListener('mouseleave', start);
-            window.addEventListener('resize', () => goTo(index));
-            document.addEventListener('visibilitychange', () => document.hidden ? stop() : start());
+        function updateFilterButtonsAppearance() {
+            if (!showAllProductButton || !showMyProductButton) return;
 
-            let startX = 0, dx = 0;
-            hero.addEventListener('touchstart', (e) => { stop(); startX = e.touches[0].clientX; dx = 0; }, { passive: true });
-            hero.addEventListener('touchmove', (e) => { dx = e.touches[0].clientX - startX; }, { passive: true });
-            hero.addEventListener('touchend', () => {
-                const threshold = hero.clientWidth * 0.15;
-                if (dx > threshold) goTo(index - 1);
-                else if (dx < -threshold) goTo(index + 1);
-                start();
+            const active = ' !bg-gradient-to-br from-green-500 to-green-600 text-white border-transparent';
+            const base  = 'inline-flex items-center justify-center rounded-full px-4 py-2 font-semibold border border-black/10 shadow text-gray-800 bg-white hover:-translate-y-0.5 hover:shadow-md transition';
+
+            if (activeFilter === 'all') {
+                showAllProductButton.className = base + active;
+                showAllProductButton.setAttribute('aria-selected', 'true');
+                showMyProductButton.className = base;
+                showMyProductButton.setAttribute('aria-selected', 'false');
+            } else {
+                showMyProductButton.className = base + active;
+                showMyProductButton.setAttribute('aria-selected', 'true');
+                showAllProductButton.className = base;
+                showAllProductButton.setAttribute('aria-selected', 'false');
+            }
+        }
+
+        function displayPageSection({ showLoading = false, showError = false, showEmpty = false, showGrid = false }) {
+            loadingSpinner.classList.toggle('hidden', !showLoading);
+            errorMessage.classList.toggle('hidden', !showError);
+            emptyStateDisplay.classList.toggle('hidden', !showEmpty);
+            productGridContainer.classList.toggle('hidden', !showGrid);
+            if (showGrid) {
+                productGridContainer.className = 'grid gap-6 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4';
+            }
+        }
+
+        /* ====================== Cards ====================== */
+        function buildProductCardElement(item) {
+            const card = document.createElement('div');
+            card.className = 'group bg-white rounded-xl shadow hover:shadow-xl transition overflow-hidden flex flex-col';
+
+            const detailLink = `{% url 'main:show_product_detail' '00000000-0000-0000-0000-000000000000' %}`.replace('00000000-0000-0000-0000-000000000000', item.id);
+
+            const imgHTML = item.thumbnail
+                ? `<img src="${s(item.thumbnail)}" alt="${s(item.title)}" class="w-full h-60 object-cover transition duration-500 group-hover:scale-105">`
+                : `<div class="w-full h-60 bg-gradient-to-br from-gray-100 to-gray-200 flex items-center justify-center text-gray-400">No Image</div>`;
+
+            const seller = item.seller || 'Unknown';
+            const desc = item.description || '';
+            const price = formatRupiah(item.price);
+
+            const isOwner = !!(CURRENT_USERNAME && (seller === CURRENT_USERNAME));
+            const ownerButtons = isOwner
+                ? `
+                <button type="button"
+                        data-product-id="${item.id}"
+                        data-product-title="${s(item.title)}"
+                        class="btn-edit-product inline-flex items-center rounded-md bg-blue-600 text-white text-sm font-semibold px-3 py-2 hover:-translate-y-0.5 hover:shadow transition">
+                    Edit
+                </button>
+                <button type="button"
+                        data-product-id="${item.id}"
+                        data-product-title="${s(item.title)}"
+                        class="btn-delete-product inline-flex items-center rounded-md bg-red-600 text-white text-sm font-semibold px-3 py-2 hover:-translate-y-0.5 hover:shadow transition">
+                    Delete
+                </button>`
+                : `
+                <button type="button"
+                        class="inline-flex items-center rounded-md bg-gradient-to-br from-rose-500 to-red-600 text-white text-sm font-semibold px-3 py-2 hover:-translate-y-0.5 hover:shadow transition">
+                    Buy Now
+                </button>`;
+
+            card.innerHTML = `
+                <a href="${detailLink}" class="block overflow-hidden">
+                    ${imgHTML}
+                </a>
+                <div class="p-4 flex flex-col gap-2">
+                    <h3 class="text-lg font-semibold text-gray-900">${s(item.title)}</h3>
+                    <div class="text-xs text-gray-600">Seller: ${s(seller)}</div>
+                    <p class="text-sm text-gray-600">${s(desc)}</p>
+                    <div class="mt-1 font-bold text-emerald-600">${price}</div>
+
+                    <div class="mt-3 flex flex-wrap gap-2">
+                        <a href="${detailLink}"
+                           class="inline-flex items-center rounded-md bg-gray-900 text-white text-sm font-semibold px-3 py-2 hover:-translate-y-0.5 hover:shadow transition">
+                            Details
+                        </a>
+                        ${ownerButtons}
+                    </div>
+                </div>
+            `;
+            return card;
+        }
+
+        function buildAddCardElement() {
+            const card = document.createElement('button');
+            card.type = 'button';
+            card.className = [
+                'group', 'border-2', 'border-dashed', 'border-gray-300',
+                'rounded-xl', 'bg-white', 'hover:border-emerald-400',
+                'hover:shadow-lg', 'transition', 'grid', 'place-items-center',
+                'aspect-[4/3]', 'w-full'
+            ].join(' ');
+            card.setAttribute('aria-label', 'Add Product');
+            card.innerHTML = `
+                <div class="flex flex-col items-center justify-center text-gray-500 group-hover:text-emerald-600">
+                    <div class="w-14 h-14 rounded-full grid place-items-center bg-gray-50 group-hover:bg-emerald-50 border border-gray-200 group-hover:border-emerald-200 transition">
+                        <svg viewBox="0 0 24 24" class="w-8 h-8" fill="currentColor" aria-hidden="true">
+                            <path d="M11 11V5a1 1 0 1 1 2 0v6h6a1 1 0 1 1 0 2h-6v6a1 1 0 1 1-2 0v-6H5a1 1 0 1 1 0-2h6z"/>
+                        </svg>
+                    </div>
+                    <span class="mt-3 text-sm font-semibold">Add Product</span>
+                </div>
+            `;
+            card.addEventListener('click', () => {
+                if (!IS_AUTHENTICATED) {
+                    alert('Please log in to add a product.');
+                    return;
+                }
+                if (typeof showProductModal === 'function') showProductModal();
+            });
+            return card;
+        }
+
+        function renderAllProductCards(items) {
+            productGridContainer.innerHTML = '';
+
+            // Render products
+            items.forEach((item) => {
+                productGridContainer.appendChild(buildProductCardElement(item));
             });
 
-            start();
-        })();
+            if (IS_AUTHENTICATED) {
+                productGridContainer.appendChild(buildAddCardElement());
+            }
+        }
+
+        /* ====================== HERO (transform-based slider) ====================== */
+        function buildHero(items) {
+            const featured = items.filter(p => !!p.is_featured);
+            if (!featured.length) {
+                heroSection.classList.add('hidden');
+                hero.innerHTML = '';
+                stopAutoSlide();
+                return;
+            }
+
+            hero.innerHTML = featured.map((p) => {
+                const title = s(p.title);
+                const detail = `{% url 'main:show_product_detail' '00000000-0000-0000-0000-000000000000' %}`.replace('00000000-0000-0000-0000-000000000000', p.id);
+                const img = p.thumbnail
+                    ? `<img src="${s(p.thumbnail)}" alt="${title}" class="w-full h-full object-cover brightness-75">`
+                    : `<div class="w-full h-full bg-gray-200"></div>`;
+
+                return `
+                    <div class="w-full h-full flex-shrink-0 relative">
+                        ${img}
+                        <div class="absolute bottom-12 left-12 text-white space-y-3">
+                            <h2 class="text-3xl sm:text-4xl font-bold">${title}</h2>
+                            <a href="${detail}"
+                               class="inline-flex items-center rounded-lg bg-gradient-to-br from-green-500 to-green-600 text-white font-semibold shadow px-5 py-3 hover:-translate-y-0.5 hover:shadow-lg transition">
+                                View Product
+                            </a>
+                        </div>
+                    </div>
+                `;
+            }).join('');
+
+            heroSection.classList.remove('hidden');
+
+            currentSlide = 0;
+            hero.style.transform = `translateX(0%)`;
+            startAutoSlide();
+
+            const many = hero.children.length > 1;
+            if (prevBtn) prevBtn.classList.toggle('hidden', !many);
+            if (nextBtn) nextBtn.classList.toggle('hidden', !many);
+        }
+
+        function goToSlide(index) {
+            const slides = hero.children.length;
+            if (!slides) return;
+            currentSlide = (index + slides) % slides;
+            hero.style.transform = `translateX(-${currentSlide * 100}%)`;
+        }
+
+        function startAutoSlide() {
+            stopAutoSlide();
+            if (hero.children.length <= 1) return;
+            autoSlideTimer = setInterval(() => goToSlide(currentSlide + 1), 3000);
+        }
+
+        function stopAutoSlide() {
+            if (autoSlideTimer) {
+                clearInterval(autoSlideTimer);
+                autoSlideTimer = null;
+            }
+        }
+
+        prevBtn?.addEventListener('click', () => {
+            stopAutoSlide();
+            goToSlide(currentSlide - 1);
+            startAutoSlide();
+        });
+        nextBtn?.addEventListener('click', () => {
+            stopAutoSlide();
+            goToSlide(currentSlide + 1);
+            startAutoSlide();
+        });
+
+        /* ====================== Filtering / Rendering ====================== */
+        function filterAndDisplayProducts() {
+            updateFilterButtonsAppearance();
+
+            const wantsMy = activeFilter === 'my';
+            if (wantsMy && !CURRENT_USERNAME) {
+                loginHint.classList.remove('hidden');
+            } else {
+                loginHint.classList.add('hidden');
+            }
+
+            const filtered = (activeFilter === 'all')
+                ? allProductData
+                : allProductData.filter(p => (p.seller && CURRENT_USERNAME) ? (p.seller === CURRENT_USERNAME) : false);
+
+            if (filtered.length === 0) {
+                displayPageSection({ showEmpty: true });
+            } else {
+                renderAllProductCards(filtered);
+                displayPageSection({ showGrid: true });
+            }
+
+            buildHero(allProductData);
+        }
+
+        // ===== Refresh button handles =====
+        const refreshBtn = document.getElementById('refresh-btn');
+        const refreshIcon = document.getElementById('refresh-icon');
+
+        function setRefreshing(isRefreshing) {
+            if (!refreshBtn) return;
+            refreshBtn.disabled = isRefreshing;
+            refreshBtn.classList.toggle('opacity-60', isRefreshing);
+            refreshBtn.classList.toggle('cursor-not-allowed', isRefreshing);
+            // spin icon while refreshing
+            if (refreshIcon) {
+                refreshIcon.classList.toggle('animate-spin', isRefreshing);
+            }
+        }
+
+        async function refreshProducts() {
+            try {
+                setRefreshing(true);
+                await fetchProductsFromServer(); // uses your existing function
+            } finally {
+                setRefreshing(false);
+            }
+        }
+
+        refreshBtn?.addEventListener('click', (e) => {
+            e.preventDefault();
+            refreshProducts();
+        });
+
+        /* ====================== Fetch ====================== */
+        async function fetchProductsFromServer() {
+            try {
+                displayPageSection({ showLoading: true });
+
+                const response = await fetch(PRODUCT_API_ENDPOINT, {
+                    headers: { 'Accept': 'application/json' },
+                });
+
+                if (!response.ok) {
+                    throw new Error('Failed to fetch product data from server');
+                }
+
+                const data = await response.json();
+                allProductData = Array.isArray(data) ? data : [];
+
+                filterAndDisplayProducts();
+            } catch (err) {
+                console.error('Error loading products:', err);
+                displayPageSection({ showError: true });
+            }
+        }
+
+        /* ====================== Events ====================== */
+        function onClickAll() {
+            activeFilter = 'all';
+            filterAndDisplayProducts();
+        }
+
+        function onClickMy() {
+            activeFilter = 'my';
+            filterAndDisplayProducts();
+        }
+
+        document.addEventListener('click', (e) => {
+            const btn = e.target.closest('.btn-edit-product');
+            if (!btn) return;
+            e.preventDefault();
+            const pid = btn.getAttribute('data-product-id');
+            if (!pid) return;
+            if (typeof window.openEditProductModal === 'function') {
+                window.openEditProductModal(pid, CURRENT_USERNAME);
+            }
+        });
+
+        document.addEventListener('click', (e) => {
+            const btn = e.target.closest('.btn-delete-product');
+            if (!btn) return;
+            e.preventDefault();
+
+            const pid = btn.getAttribute('data-product-id');
+            const title = btn.getAttribute('data-product-title') || 'Untitled';
+            const deleteUrl = window.DELETE_PRODUCT_URL_PATTERN.replace('PRODUCT_ID_PLACEHOLDER', pid);
+
+            if (typeof showDeleteConfirmModal === 'function') {
+                showDeleteConfirmModal(title, deleteUrl);
+            }
+        });
+
+        document.addEventListener('productAdded', fetchProductsFromServer);
+        document.addEventListener('productUpdated', fetchProductsFromServer);
+        document.addEventListener('productDeleted', fetchProductsFromServer);
+
+        /* ====================== Init ====================== */
+        function initPage() {
+            showAllProductButton.addEventListener('click', onClickAll);
+            showMyProductButton.addEventListener('click', onClickMy);
+            fetchProductsFromServer();
+        }
+
+        initPage();
+
+        document.addEventListener('visibilitychange', () => {
+            if (document.hidden) stopAutoSlide();
+            else startAutoSlide();
+        });
+        window.addEventListener('resize', () => {
+            goToSlide(currentSlide);
+        });
     </script>
 {% endblock content %}
