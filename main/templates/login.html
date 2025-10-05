@@ -5,19 +5,20 @@
 {% endblock meta %}
 
 {% block content %}
+    <!-- main -->
     <main class="px-4">
         <div class="max-w-sm mx-auto pt-24 pb-12">
+            <!-- title -->
             <h1 class="text-2xl font-bold mb-6 text-gray-900">Welcome back</h1>
 
-            {% if form.non_field_errors %}
-            <div class="mb-4 text-sm text-red-700 bg-red-50 border border-red-200 rounded-lg px-3 py-2">
-                {{ form.non_field_errors }}
-            </div>
-            {% endif %}
+            <!-- non field error -->
+            <div id="form-non-field-error" class="hidden mb-4 text-sm text-red-700 bg-red-50 border border-red-200 rounded-lg px-3 py-2"></div>
 
-            <form method="POST" action="" class="space-y-4">
+            <!-- form -->
+            <form id="loginForm" method="POST" action="" class="space-y-4">
                 {% csrf_token %}
 
+                <!-- username -->
                 <div>
                     <label for="id_username" class="block text-sm font-semibold text-gray-800 mb-1">Username</label>
                     <p class="text-xs text-gray-500 mb-1">Your account username.</p>
@@ -29,11 +30,10 @@
                         value="{{ form.username.value|default_if_none:'' }}"
                         class="w-full rounded-lg border border-gray-300 px-3 py-2 text-gray-900 outline-none focus:ring-4 focus:ring-emerald-300 focus:border-emerald-500"
                     >
-                    {% if form.username.errors %}
-                    <p class="mt-1 text-sm text-red-600">{{ form.username.errors|striptags }}</p>
-                    {% endif %}
+                    <p id="err_username" class="hidden mt-1 text-sm text-red-600"></p>
                 </div>
 
+                <!-- password -->
                 <div>
                     <label for="id_password" class="block text-sm font-semibold text-gray-800 mb-1">Password</label>
                     <p class="text-xs text-gray-500 mb-1">Case-sensitive. Keep it private.</p>
@@ -44,19 +44,143 @@
                         autocomplete="current-password"
                         class="w-full rounded-lg border border-gray-300 px-3 py-2 text-gray-900 outline-none focus:ring-4 focus:ring-emerald-300 focus:border-emerald-500"
                     >
-                    {% if form.password.errors %}
-                    <p class="mt-1 text-sm text-red-600">{{ form.password.errors|striptags }}</p>
-                    {% endif %}
+                    <p id="err_password" class="hidden mt-1 text-sm text-red-600"></p>
                 </div>
 
+                <!-- actions -->
                 <div class="flex items-center justify-between pt-2">
                     <a href="{% url 'main:register' %}" class="text-sm font-semibold text-emerald-700 hover:underline">Create an account</a>
-                    <button type="submit"
+                    <button id="loginBtn" type="submit"
                             class="inline-flex items-center rounded-lg bg-gradient-to-br from-green-500 to-green-600 text-white font-bold px-4 py-2.5 shadow hover:-translate-y-0.5 hover:shadow-lg transition">
-                        Login
+                        <span id="loginBtnText">Login</span>
+                        <svg id="loginBtnSpin" class="hidden ml-2 h-4 w-4 animate-spin" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+                            <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                            <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v4a4 4 0 00-4 4H4z"></path>
+                        </svg>
                     </button>
                 </div>
             </form>
         </div>
+
+        {% include 'toast.html' %}
     </main>
+
+    <!-- scripts -->
+    <script>
+        // csrf helpers
+        function getCookie(name) {
+            const value = `; ${document.cookie}`;
+            const parts = value.split(`; ${name}=`);
+            if (parts.length === 2) return decodeURIComponent(parts.pop().split(';').shift());
+            return '';
+        }
+
+        // error helpers
+        function clearErrors() {
+            const nf = document.getElementById('form-non-field-error');
+            const eu = document.getElementById('err_username');
+            const ep = document.getElementById('err_password');
+            nf?.classList.add('hidden'); nf && (nf.textContent = '');
+            eu?.classList.add('hidden'); eu && (eu.textContent = '');
+            ep?.classList.add('hidden'); ep && (ep.textContent = '');
+        }
+
+        function showFieldError(id, msg) {
+            const el = document.getElementById(id);
+            if (!el) return;
+            el.textContent = msg;
+            el.classList.remove('hidden');
+        }
+
+        function setSubmitting(isSubmitting) {
+            const btn = document.getElementById('loginBtn');
+            const txt = document.getElementById('loginBtnText');
+            const spinner = document.getElementById('loginBtnSpin');
+            if (!btn) return;
+            btn.disabled = isSubmitting;
+            btn.classList.toggle('opacity-70', isSubmitting);
+            spinner?.classList.toggle('hidden', !isSubmitting);
+            txt && (txt.textContent = isSubmitting ? 'Logging in...' : 'Login');
+        }
+
+        async function handleLoginSubmit(e) {
+            e.preventDefault();
+            clearErrors();
+            setSubmitting(true);
+
+            const form = e.currentTarget;
+            const action = form.getAttribute('action') || window.location.href;
+            const csrf = form.querySelector('input[name=csrfmiddlewaretoken]')?.value || getCookie('csrftoken');
+            const fd = new FormData(form);
+
+            // honor ?next=... if present
+            const urlParams = new URLSearchParams(window.location.search);
+            const nextUrl = urlParams.get('next') || "{% url 'main:show_main' %}";
+
+            try {
+                const res = await fetch(action, {
+                    method: 'POST',
+                    headers: {
+                        'X-Requested-With': 'XMLHttpRequest',
+                        'X-CSRFToken': csrf
+                    },
+                    credentials: 'same-origin',
+                    body: fd
+                });
+
+                // try JSON-first contract
+                let data = null;
+                const ct = res.headers.get('content-type') || '';
+                if (ct.includes('application/json')) {
+                    data = await res.json();
+                }
+
+                if (data && data.success) {
+                    if (typeof showToast === 'function') {
+                        showToast('Logged in', 'Welcome back!', 'success');
+                    }
+                    setTimeout(() => { window.location.href = data.redirect || nextUrl; }, 400);
+                    return;
+                }
+
+                // fallback: if server redirected, treat as success
+                if (res.redirected) {
+                    if (typeof showToast === 'function') {
+                        showToast('Logged in', 'Welcome back!', 'success');
+                    }
+                    setTimeout(() => { window.location.href = res.url || nextUrl; }, 200);
+                    return;
+                }
+
+                // if still here, show errors
+                if (data && data.errors) {
+                    if (data.errors.__all__) {
+                        const nf = document.getElementById('form-non-field-error');
+                        if (nf) { nf.textContent = data.errors.__all__.join(' '); nf.classList.remove('hidden'); }
+                    }
+                    if (data.errors.username) {
+                        showFieldError('err_username', data.errors.username.join(' '));
+                    }
+                    if (data.errors.password) {
+                        showFieldError('err_password', data.errors.password.join(' '));
+                    }
+                } else {
+                    const nf = document.getElementById('form-non-field-error');
+                    if (nf) { nf.textContent = 'Login failed. Please check your credentials.'; nf.classList.remove('hidden'); }
+                }
+            } catch (err) {
+                const nf = document.getElementById('form-non-field-error');
+                if (nf) { nf.textContent = 'Network error. Please try again.'; nf.classList.remove('hidden'); }
+            } finally {
+                setSubmitting(false);
+            }
+        }
+
+        (function initLoginAjax() {
+            const form = document.getElementById('loginForm');
+            if (!form || form._wired) return;
+            form._wired = true;
+            form.addEventListener('submit', handleLoginSubmit);
+        })();
+    </script>
 {% endblock content %}
