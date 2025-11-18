@@ -202,7 +202,8 @@ def proxy_image(request):
         )
     except requests.RequestException as e:
         return HttpResponse(f'Error fetching image: {str(e)}', status=500)
-    
+
+@csrf_exempt
 def create_product_flutter(request):
     if request.method == 'POST':
         data = json.loads(request.body)
